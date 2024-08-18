@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Poppins";
+}
+
+.article-container {
+  position: relative;
+  text-align: center;
+  border: solid white 1px;
+}
+
+.oval {
+  margin-top: -10px;
+  position: absolute;
+  right:-55px;
+  height: 70px;
+  width: 100px;
+  background-color: #E1067E;
+  border-radius: 100%;
+}
+
+.oval2 {
+  margin-top: -10px;
+  position: absolute;
+  right:-55px;
+  height: 70px;
+  width: 100px;
+  background-color: #8AB3DF;
+  border-radius: 100%;
+}
+
+.image {
+  display: block;
+  width: 100%; /* Ensure the image takes the full width of its container */
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0.3; /* Initial opacity */
+  transition: opacity 0.5s ease; /* Smooth transition for opacity */
+}
+
+.article-container:hover .image {
+  opacity: 0.3;
+}
+.txt {
+  display: none;
+  padding-top:80px;
+}
+
+.article-container:hover .overlay {
+  opacity: 1.5;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.3);
+  /* Adjust the background color on hover */
+}
+
+.article-container:hover .txt {
+  display: block;
+}
+
+.Mui-selected{ border-bottom: none !important; }
+
+.leaflet-control-attribution.leaflet-control {
+  display: none;
+}
+

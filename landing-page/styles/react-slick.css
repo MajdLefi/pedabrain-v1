@@ -1,0 +1,39 @@
+.dots {
+  position: absolute;
+  z-index: 999;
+  margin-top: -40px;
+  display: flex !important;
+  justify-content: center;
+  width: 100%;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.slick-dots .slick-active .dot {
+  background-color: #2563EB;
+}
+
+.slider-slick {
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.slick-center {
+  transform: scale(1);
+  z-index: 2;
+  opacity: 1;
+  /* border-radius: 12px; */
+}
+
+.slider-slick:not(.slick-center) {
+  transform: scale(0.2);
+  opacity: 0.5;
+  margin-left: 100px;
+}
+

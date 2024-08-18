@@ -1,0 +1,42 @@
+[
+    {
+        "room": "60f8a63bcb86c92abc84d282", 
+        "guest": "60f8a63bcb86c92abc84d281", 
+        "checkInDate": "2023-09-25T12:00:00Z",
+        "checkOutDate": "2023-09-30T12:00:00Z",
+        "totalNights": 12,
+        "totalAmount": 1500, 
+        "status": "pending",
+        "rate": "Standard"
+    },
+    {
+        "room": "60f8a63bcb86c92abc84d282", 
+        "guest": "60f8a63bcb86c92abc84d281", 
+        "checkInDate": "2023-09-25T12:00:00Z",
+        "checkOutDate": "2023-09-30T12:00:00Z",
+        "totalNights": 4,
+        "totalAmount": 500, 
+        "status": "confirmed",
+        "rate": "Deluxe"
+    }, 
+    {
+        "room": "60f8a63bcb86c92abc84d282", 
+        "guest": "60f8a63bcb86c92abc84d281", 
+        "checkInDate": "2023-09-25T12:00:00Z",
+        "checkOutDate": "2023-09-30T12:00:00Z",
+        "totalNights": 6,
+        "totalAmount": 900, 
+        "status": "confirmed",
+        "rate": "Standard"
+    },
+    {
+        "room": "60f8a63bcb86c92abc84d283", 
+        "guest": "60f8a63bcb86c92abc84d282", 
+        "checkInDate": "2023-10-10T12:00:00Z",
+        "checkOutDate": "2023-10-15T12:00:00Z",
+        "totalNights": 1,
+        "totalAmount": 250, 
+        "status": "pending",
+        "rate": "Deluxe"
+    }
+]

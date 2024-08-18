@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Details</title>
+    <style>
+      /* Define your CSS styles here */
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      .booking-details {
+        margin-top: 20px;
+      }
+      .detail {
+        margin-bottom: 10px;
+      }
+      .detail label {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Booking Details</h1>
+      <div class="booking-details">
+        <div class="detail">
+          <label>Guest:</label>
+          <span><%= booking.guestData.fullName %></span>
+        </div>
+        <div class="detail">
+          <label>Companion:</label>
+          <span
+            ><%= booking.companionData ? booking.companionData.fullName : 'No
+            Companion' %></span
+          >
+        </div>
+        <div class="detail">
+          <label>Check-in Date:</label>
+          <span><%= booking.checkInGuest %></span>
+        </div>
+        <div class="detail">
+          <label>Check-out Date:</label>
+          <span><%= booking.checkOutGuest %></span>
+        </div>
+        <div class="detail">
+          <label>Status:</label>
+          <span><%= booking.status %></span>
+        </div>
+        <div class="detail">
+          <label>Remarks:</label>
+          <span><%= booking.remarks %></span>
+        </div>
+        <!-- Add more details as needed -->
+      </div>
+    </div>
+  </body>
+</html>
