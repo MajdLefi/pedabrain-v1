@@ -4,6 +4,9 @@ import { MainLayout } from "@/components/layout";
 const Herosection = dynamic(() => import("@/components/home-page/Herosection"));
 const AboutUs = dynamic(() => import("@/components/home-page/AboutUs"));
 const Activities = dynamic(() => import("@/components/home-page/Activities"));
+const Books = dynamic(() => import("@/components/home-page/Books"));
+const OurTeam = dynamic(() => import("@/components/home-page/OurTeam"));
+const ContactUs = dynamic(() => import("@/components/home-page/ContactUs"));
 
 const Home: NextPageWithLayout = () => {
   return (
@@ -11,6 +14,9 @@ const Home: NextPageWithLayout = () => {
       <Herosection />
       <AboutUs />
       <Activities />
+      <Books />
+      <OurTeam />
+      <ContactUs />
     </>
   );
 };

@@ -3,21 +3,13 @@ import { Box, Typography } from "@mui/material";
 
 interface Props {
   title: string;
-  bgColor: 1 | 2 | 3;
 }
 
-const FooterSectionTitle: FC<Props> = ({ title, bgColor }) => {
-  const textColor = {
-    1: 'secondary.main',
-    2: 'primary.dark',
-    3: 'primary.light',
-  };
-
-  const labelColor = bgColor === 1 ? 'secondary.dark' : 'white';
+const FooterSectionTitle: FC<Props> = ({ title }) => {
 
   return (
-    <Box>
-      <Typography sx={{color:labelColor}} className={`text-md font-semibold uppercase ${textColor[bgColor]}`}>
+    <Box sx={{mb:'32px', color:"#222222"}}>
+      <Typography sx={{fontSize:"18px", fontWeight:"600"}}>
         {title}
       </Typography>
     </Box>

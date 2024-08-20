@@ -14,7 +14,7 @@ const MainLayout: FC<Props> = ({ children, headerBgColor, footerBgColor }) => {
     <Box component="main" sx={{position:"relative"}}>
       <Header bgColor={headerBgColor} />
       {children}
-      {/* <Footer bgColor={footerBgColor} /> */}
+      <Footer />
     </Box>
   );
 };
