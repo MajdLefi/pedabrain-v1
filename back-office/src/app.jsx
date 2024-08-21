@@ -1,5 +1,6 @@
 import 'src/global.css';
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 import { Provider as ReduxProvider } from 'react-redux';
 import { store } from './store';
@@ -15,6 +16,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <ReduxProvider store={store}>
+        <ToastContainer />
         <Router />
       </ReduxProvider>
     </ThemeProvider>

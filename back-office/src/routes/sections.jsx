@@ -37,7 +37,7 @@ export default function Router() {
         { element: <IndexPage />, index: true },
         { path: 'user', element: <ProtectedRoute element={<UserPage />} /> },
         { path: 'products', element: <ProtectedRoute element={<ProductsPage />} /> },
-        { path: 'blog', element: <ProtectedRoute element={<BlogPage />} /> },
+        { path: 'seance', element: <ProtectedRoute element={<BlogPage />} /> },
       ],
     },
     {

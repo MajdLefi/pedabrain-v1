@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
@@ -14,27 +13,30 @@ import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
-
 import { account } from 'src/_mock/account';
 
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
 import { NAV } from './config-layout';
-import navConfig from './config-navigation';
+import { adminNavConfig, parentNavConfig } from './config-navigation';
 
 // ----------------------------------------------------------------------
 
 export default function Nav({ openNav, onCloseNav }) {
-  const pathname = usePathname();
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const userId = storedUser?.id;
+  const token = storedUser?.token;
+  const role = storedUser?.role;
 
+  const pathname = usePathname();
   const upLg = useResponsive('up', 'lg');
 
   useEffect(() => {
     if (openNav) {
       onCloseNav();
     }
-  }, [pathname]);
+  }, [pathname, openNav, onCloseNav]);
 
   const renderAccount = (
     <Box
@@ -49,17 +51,19 @@ export default function Nav({ openNav, onCloseNav }) {
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
       }}
     >
-      <Avatar src={account.photoURL} alt="photoURL" />
-
+      <Avatar src={account.photoURL} alt="User Photo" />
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
-
+        <Typography variant="subtitle2">
+          {storedUser?.firstName} {storedUser?.lastName}
+        </Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
+          {role}
         </Typography>
       </Box>
     </Box>
   );
+
+  const navConfig = role === 'admin' ? adminNavConfig : parentNavConfig;
 
   const renderMenu = (
     <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
@@ -77,21 +81,13 @@ export default function Nav({ openNav, onCloseNav }) {
           src="/assets/illustrations/illustration_avatar.png"
           sx={{ width: 100, position: 'absolute', top: -50 }}
         />
-
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="h6">Need assistance</Typography>
-
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-            From Pedabrain ?
+            From Pedabrain?
           </Typography>
         </Box>
-
-        <Button
-          href="/"
-          target="_blank"
-          variant="contained"
-          color="inherit"
-        >
+        <Button href="/" target="_blank" variant="contained" color="inherit">
           Contact us
         </Button>
       </Stack>
@@ -110,13 +106,9 @@ export default function Nav({ openNav, onCloseNav }) {
       }}
     >
       <Logo sx={{ mt: 3, ml: 4 }} />
-
       {renderAccount}
-
       {renderMenu}
-
       <Box sx={{ flexGrow: 1 }} />
-
       {renderUpgrade}
     </Scrollbar>
   );
@@ -165,7 +157,6 @@ Nav.propTypes = {
 
 function NavItem({ item }) {
   const pathname = usePathname();
-
   const active = item.path === pathname;
 
   return (
@@ -192,12 +183,15 @@ function NavItem({ item }) {
       <Box component="span" sx={{ width: 24, height: 24, mr: 2 }}>
         {item.icon}
       </Box>
-
-      <Box component="span">{item.title} </Box>
+      <Box component="span">{item.title}</Box>
     </ListItemButton>
   );
 }
 
 NavItem.propTypes = {
-  item: PropTypes.object,
+  item: PropTypes.shape({
+    path: PropTypes.string,
+    title: PropTypes.string,
+    icon: PropTypes.node,
+  }).isRequired,
 };

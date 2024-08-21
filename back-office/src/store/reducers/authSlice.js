@@ -59,15 +59,15 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        toast.success('Login admin', {
-          position: 'bottom-left'
+        toast.success('Login with success', {
+          position: 'top-center'
         });
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        toast.error('verify password or email', {
-          position: 'bottom-left'
+        toast.error('Verify password or email', {
+          position: 'top-center'
         });
       })
       .addCase(register.pending, (state) => {
@@ -76,15 +76,15 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        toast.success('Login admin', {
-          position: 'bottom-left'
+        toast.success('Register with success', {
+          position: 'top-center'
         });
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        toast.error('verify password or email', {
-          position: 'bottom-left'
+        toast.error('Verify teh fields', {
+          position: 'top-center'
         });
       })
       .addCase(changePassword.pending, (state) => {
@@ -93,14 +93,14 @@ const authSlice = createSlice({
       .addCase(changePassword.fulfilled, (state, action) => {
         state.loading = false;
         toast.success('Password updated', {
-          position: 'bottom-left'
+          position: 'top-center'
         });
       })
       .addCase(changePassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         toast.error('verify password', {
-          position: 'bottom-left'
+          position: 'top-center'
         });
       })
   }

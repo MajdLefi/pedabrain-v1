@@ -7,6 +7,6 @@ import userSlice from './userSlice';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
-const reducers = combineReducers({authSlice});
+const reducers = combineReducers({authSlice, userSlice});
 
 export default reducers;

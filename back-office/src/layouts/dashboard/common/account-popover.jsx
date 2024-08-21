@@ -1,5 +1,4 @@
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
@@ -8,13 +7,11 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import { useDispatch } from 'react-redux';
-
-import { account } from 'src/_mock/account';
-import { logout } from 'src/store/reducers/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { fetchUserById } from 'src/store/reducers/userSlice'; // Assuming this is the correct path
+import { logout } from 'src/store/reducers/authSlice';
 
-// ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
@@ -31,16 +28,25 @@ const MENU_OPTIONS = [
   },
 ];
 
-// ----------------------------------------------------------------------
-
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Extract userId and token from localStorage
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const userId = storedUser?.id;
+  const token = storedUser?.token;
+
+  // Fetch user data when component mounts
+
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const handleClose = () => {
     setOpen(null);
@@ -48,8 +54,8 @@ export default function AccountPopover() {
 
   const handleLogout = async () => {
     dispatch(logout());
-        navigate('/login');
-        window.location.reload();
+    navigate('/login');
+    window.location.reload();
   };
 
   return (
@@ -67,15 +73,14 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
-          alt={account.displayName}
+          alt={userName}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {storedUser.firstName.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -96,10 +101,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {storedUser.firstName}  {storedUser.lastName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {storedUser.email}
           </Typography>
         </Box>
 

@@ -19,10 +19,13 @@ import AppWidgetSummary from '../app-widget-summary';
 // ----------------------------------------------------------------------
 
 export default function AppView() {
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const userId = storedUser?.id;
+  const token = storedUser?.token;
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Hi, Welcome back Chihéb👋
+        Hi, Welcome back {storedUser.firstName}👋
       </Typography>
 
       <Grid container spacing={3}>
