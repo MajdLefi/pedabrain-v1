@@ -8,8 +8,11 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import { useDispatch } from 'react-redux';
 
 import { account } from 'src/_mock/account';
+import { logout } from 'src/store/reducers/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
@@ -36,9 +39,17 @@ export default function AccountPopover() {
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+  const handleLogout = async () => {
+    dispatch(logout());
+        navigate('/login');
+        window.location.reload();
   };
 
   return (
@@ -105,7 +116,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={handleLogout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout

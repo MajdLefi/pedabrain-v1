@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------
 
 export const account = {
-  displayName: 'Jaydon Frankie',
-  email: 'demo@minimals.cc',
+  displayName: 'Chihéb Rinéz',
+  email: 'chiheb@pedabrain.com',
   photoURL: '/assets/images/avatars/avatar_25.jpg',
 };

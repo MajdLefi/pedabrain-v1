@@ -6,8 +6,8 @@ const { loginUserValidator, signupUserValidator } = require("../utils/validators
 
 const { signup, login } = require("../services/authService");
 
-//signup
-router.route('/signup').post(signupUserValidator, signup)
+//register
+router.route('/register').post(signupUserValidator, signup)
 
 //login
 router.route('/login').post(loginUserValidator, login)
