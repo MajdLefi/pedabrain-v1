@@ -3,11 +3,13 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from 'src/layouts/dashboard';
 
 // Lazy load your pages
-export const IndexPage = lazy(() => import('src/pages/app'));
-export const BlogPage = lazy(() => import('src/pages/blog'));
-export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
+export const ParentsPage = lazy(() => import('src/pages/users/parents'));
+export const KidsPage = lazy(() => import('src/pages/users/kids'));
+export const TeachersPage = lazy(() => import('src/pages/users/teachers'));
+export const PsychologistsPage = lazy(() => import('src/pages/users/psychologists'));
+export const IndexPage = lazy(() => import('src/pages/app'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
@@ -35,9 +37,10 @@ export default function Router() {
       ),
       children: [
         { element: <IndexPage />, index: true },
-        { path: 'user', element: <ProtectedRoute element={<UserPage />} /> },
-        { path: 'products', element: <ProtectedRoute element={<ProductsPage />} /> },
-        { path: 'seance', element: <ProtectedRoute element={<BlogPage />} /> },
+        { path: 'parents', element: <ProtectedRoute element={<ParentsPage />} /> },
+        { path: 'kids', element: <ProtectedRoute element={<KidsPage />} /> },
+        { path: 'teachers', element: <ProtectedRoute element={<TeachersPage />} /> },
+        { path: 'psychologists', element: <ProtectedRoute element={<PsychologistsPage />} /> },
       ],
     },
     {
