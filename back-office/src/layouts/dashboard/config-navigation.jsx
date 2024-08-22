@@ -27,8 +27,23 @@ export const adminNavConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'user',
-    path: '/user',
+    title: 'kids',
+    path: '/kids',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'parents',
+    path: '/parents',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'teachers',
+    path: '/teachers',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'psychologists',
+    path: '/psychologists',
     icon: icon('ic_user'),
   },
   {
