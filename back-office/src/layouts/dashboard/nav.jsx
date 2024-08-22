@@ -109,7 +109,7 @@ export default function Nav({ openNav, onCloseNav }) {
       {renderAccount}
       {renderMenu}
       <Box sx={{ flexGrow: 1 }} />
-      {renderUpgrade}
+      {/* {renderUpgrade} */}
     </Scrollbar>
   );
 

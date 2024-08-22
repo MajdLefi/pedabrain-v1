@@ -15,7 +15,7 @@ const login = async (userData) => {
 
 // Register user
 const register = async (userData) => {
-  const response = await axios.post('http://localhost:8000/api/v0/auth/register', userData);
+  const response = await axios.post(API_URL + '/auth/register', userData);
 
   // if (response.data) {
   //   localStorage.setItem('user', JSON.stringify({ role: response.data.data.role, token: response.data.token, id: response.data.data._id }));
