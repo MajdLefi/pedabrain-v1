@@ -5,7 +5,7 @@ export default function ParentsPage() {
   return (
     <>
     <Helmet>
-      <title> Parents | Minimal UI </title>
+      <title> Parents | PEDABRAIN </title>
     </Helmet>
 
     <UserView />
