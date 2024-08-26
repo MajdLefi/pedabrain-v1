@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema(
         problem: {
             type: String,
         },
+        status: {
+            type: String,
+            enum: ['active', 'banned'],
+        },
         role: {
             type: String,
             enum: ['admin', 'kid', 'parent', 'teacher'],

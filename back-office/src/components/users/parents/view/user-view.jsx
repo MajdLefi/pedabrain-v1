@@ -1,14 +1,14 @@
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { fetchUsersByRole } from 'src/store/reducers/userSlice';
 
 import { users } from 'src/_mock/user';
 
@@ -36,6 +36,22 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.authSlice.user);
+  const users = useSelector((state) => state.userSlice.users?.data || []);
+  const token = user.token;
+
+  useEffect(() => {
+    //setLoading(true);
+    dispatch(fetchUsersByRole({ token, role: 'parent' }))
+      //.then(() => setLoading(false))
+      .catch((error) => {
+        console.error('Error fetching users:', error);
+        //setLoading(false);
+      });
+  }, [dispatch, token]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -136,7 +152,8 @@ export default function UserPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.id}
+                      key={row._id}
+                      _id={row._id}
                       firstName={row.firstName}
                       lastName={row.lastName}
                       phone={row.phone}

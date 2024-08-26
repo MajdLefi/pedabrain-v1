@@ -39,9 +39,7 @@ exports.getUserByRole = asyncHandler(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         results: users.length,
-        data: {
-            users
-        }
+        data: users // Returning users array directly
     });
 });
 

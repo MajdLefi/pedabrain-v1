@@ -49,7 +49,9 @@ exports.createUserValidator = exports.createValidator(User);
 
 exports.updateUserValidator = [
     check('id').isMongoId().withMessage('Invalid User id format'),
-
+    check('status').optional()
+        .isIn(['active', 'banned'])
+        .withMessage('Invalid status'),
     body('email')
         .optional()
         .notEmpty()

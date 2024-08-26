@@ -15,7 +15,7 @@ const { signup, login } = require("../services/authService");
 
 /**
  * @swagger
- * /api/v0/register:
+ * /api/v0/auth/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Auth]
@@ -42,7 +42,7 @@ router.route('/register').post(signupUserValidator, signup)
 
 /**
  * @swagger
- * /api/v0/login:
+ * /api/v0/auth/login:
  *   post:
  *     summary: Log in a user
  *     tags: [Auth]

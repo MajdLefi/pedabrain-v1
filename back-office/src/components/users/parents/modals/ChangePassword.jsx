@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Container, TextField, Modal, Button, Box, Typography, Grid } from '@mui/material';
+import { useState } from 'react';
+import { Container, TextField, Modal, Button, Box, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-// import { addHospital, fetchHospitals } from 'store/reducers/hospitalSlice';
 import { toast } from 'react-toastify';
+import { changePassword } from 'src/store/reducers/authSlice';
 import Iconify from 'src/components/iconify';
 
 const style = {
@@ -20,44 +20,50 @@ const style = {
 };
 
 const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required('First name is required'),
-  lastName: Yup.string().required('Last name is required'),
-  email: Yup.string().required('Email is required'),
-  phone: Yup.string().required('Phone is required'),
-  gender: Yup.string().required('Gender is required'),
-  password: Yup.string().required('Password is required'),
-  passwordConfirm: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+  currentPassword: Yup.string().required('Current password is required'),
+  newPassword: Yup.string().required('New password is required'),
+  newPasswordConfirm: Yup.string()
+    .oneOf([Yup.ref('newPassword'), null], 'Passwords must match')
+    .required('Confirm your new password'),
 });
 
 export default function ChangePassword() {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
-  //const user = useSelector((state) => state.authSlice.user);
+  const user = useSelector((state) => state.authSlice.user);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const onSubmit = async (values, { setSubmitting, setErrors }) => {
-    // const token = user.token;
-    // if (token) {
-    //   try {
-    //     await dispatch(addHospital({ hospitalData: values, token }));
-    //     await dispatch(fetchHospitals(token));
-    //     handleClose();
-    //   } catch (error) {
-    //     toast.error(error.message, { theme: 'colored' });
-    //     setErrors(error.response.data.errors);
-    //   }
-    // } else {
-    //   toast.error('Token not available');
-    // }
-    // setSubmitting(false);
+    if (user && user.token) {
+      try {
+        await dispatch(
+          changePassword({
+            userId: user.id,
+            token: user.token,
+            passwordData: {
+              currentPassword: values.currentPassword,
+              newPassword: values.newPassword,
+            },
+          })
+        ).unwrap(); // To handle rejections from the asyncThunk
+        //toast.success('Password updated successfully');
+        handleClose();
+      } catch (error) {
+        //toast.error(error || 'Failed to update password');
+        setErrors({ newPasswordConfirm: error });
+      }
+    } else {
+      //toast.error('User token not available');
+    }
+    setSubmitting(false);
   };
 
   return (
     <Box>
-      <Box onClick={handleOpen} sx={{ display: 'flex' }}>
-        {/* <Iconify icon="eva:edit-fill" sx={{ ml: '5px', mr: '5px' }} /> */}
+      <Box onClick={handleOpen} sx={{ display: 'flex', cursor: 'pointer' }}>
+        <Iconify icon="eva:lock-outline" sx={{ mr: '5px',  pt:'2px' }} />
         <Typography sx={{ pt: '1px' }}>Change password</Typography>
       </Box>
       <Modal
@@ -72,15 +78,9 @@ export default function ChangePassword() {
           </Typography>
           <Formik
             initialValues={{
-              firstName: '',
-              lastName: '',
-              email: '',
-              phone: '',
-              gender: '',
-              location: '',
-              //birthday : '',
-              password: '',
-              passwordConfirm: '',
+              currentPassword: '',
+              newPassword: '',
+              newPasswordConfirm: '',
             }}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
@@ -99,29 +99,43 @@ export default function ChangePassword() {
                 <Box sx={{ mb: '15px' }}>
                   <TextField
                     sx={{ width: '100%' }}
-                    id="location"
-                    name="location"
-                    label="Mot de passe"
+                    id="currentPassword"
+                    name="currentPassword"
+                    label="Current Password"
                     variant="outlined"
-                    value={values.phone}
+                    value={values.currentPassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.location && Boolean(errors.location)}
-                    helperText={touched.location && errors.location}
+                    error={touched.currentPassword && Boolean(errors.currentPassword)}
+                    helperText={touched.currentPassword && errors.currentPassword}
                   />
                 </Box>
                 <Box sx={{ mb: '15px' }}>
                   <TextField
                     sx={{ width: '100%' }}
-                    id="password"
-                    name="password"
-                    label="Confirmer mot de passe"
+                    id="newPassword"
+                    name="newPassword"
+                    label="New Password"
                     variant="outlined"
-                    value={values.phone}
+                    value={values.newPassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.password && Boolean(errors.password)}
-                    helperText={touched.password && errors.password}
+                    error={touched.newPassword && Boolean(errors.newPassword)}
+                    helperText={touched.newPassword && errors.newPassword}
+                  />
+                </Box>
+                <Box sx={{ mb: '15px' }}>
+                  <TextField
+                    sx={{ width: '100%' }}
+                    id="newPasswordConfirm"
+                    name="newPasswordConfirm"
+                    label="Confirm New Password"
+                    variant="outlined"
+                    value={values.newPasswordConfirm}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.newPasswordConfirm && Boolean(errors.newPasswordConfirm)}
+                    helperText={touched.newPasswordConfirm && errors.newPasswordConfirm}
                   />
                 </Box>
                 <Box sx={{ textAlign: 'end' }}>

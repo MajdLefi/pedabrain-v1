@@ -76,7 +76,7 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        toast.success('Register with success', {
+        toast.success('Compte crée avec succés', {
           position: 'top-center'
         });
       })

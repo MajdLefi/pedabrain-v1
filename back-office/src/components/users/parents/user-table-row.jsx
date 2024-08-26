@@ -14,11 +14,13 @@ import IconButton from '@mui/material/IconButton';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import EditParent from './modals/EditParent';
-import ChangePassword from './modals/ChangePaswword';
+import EditStatus from './modals/EditStatus';
+import ChangePassword from './modals/ChangePassword';
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
+  _id,
   selected,
   firstName,
   lastName,
@@ -37,6 +39,7 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
+  console.log(_id);
 
   return (
     <>
@@ -60,7 +63,7 @@ export default function UserTableRow({
 
         <TableCell>{email}</TableCell>
         <TableCell>{location}</TableCell>
-        
+
         <TableCell>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
@@ -81,11 +84,22 @@ export default function UserTableRow({
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         PaperProps={{
-          sx: { width: 170 },
+          sx: { width: 190 },
         }}
       >
-        <MenuItem >
-          <EditParent />
+        <MenuItem>
+          <EditParent
+            _id={_id}
+            firstName={firstName}
+            lastName={lastName}
+            phone={phone}
+            email={email}
+            location={location}
+          />
+        </MenuItem>
+
+        <MenuItem>
+          <EditStatus _id={_id} status={status} />
         </MenuItem>
 
         <MenuItem sx={{ color: 'error.main' }}>

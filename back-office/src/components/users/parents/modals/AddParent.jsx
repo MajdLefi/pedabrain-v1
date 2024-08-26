@@ -1,11 +1,25 @@
-import { useState, useEffect } from 'react';
-import { Container, TextField, Modal, Button, Box, Typography, Grid } from '@mui/material';
+import { useState } from 'react';
+import {
+  MenuItem,
+  InputLabel,
+  TextField,
+  Modal,
+  Button,
+  Box,
+  Typography,
+  FormControl,
+  Select,
+  FormHelperText,
+} from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-// import { addHospital, fetchHospitals } from 'store/reducers/hospitalSlice';
+import { fetchUsers } from 'src/store/reducers/userSlice';
+import { register } from 'src/store/reducers/authSlice';
 import { toast } from 'react-toastify';
 import Iconify from 'src/components/iconify';
+import { useTheme } from '@mui/material/styles';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 const style = {
   position: 'absolute',
@@ -22,36 +36,43 @@ const style = {
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required('First name is required'),
   lastName: Yup.string().required('Last name is required'),
-  email: Yup.string().required('Email is required'),
+  email: Yup.string().email('Must be a valid email').required('Email is required'),
   phone: Yup.string().required('Phone is required'),
+  location: Yup.string().required('Location is required'),
   gender: Yup.string().required('Gender is required'),
-  password: Yup.string().required('Password is required'),
-  passwordConfirm: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+  password: Yup.string()
+    .min(8, 'Password must be at least 8 characters')
+    .required('Password is required'),
+  passwordConfirm: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('Confirm password is required'),
 });
 
 export default function AddParent() {
   const [open, setOpen] = useState(false);
+  const [gender, setGender] = useState('');
+
   const dispatch = useDispatch();
-  //const user = useSelector((state) => state.authSlice.user);
+  const user = useSelector((state) => state.authSlice.user);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const onSubmit = async (values, { setSubmitting, setErrors }) => {
-    // const token = user.token;
-    // if (token) {
-    //   try {
-    //     await dispatch(addHospital({ hospitalData: values, token }));
-    //     await dispatch(fetchHospitals(token));
-    //     handleClose();
-    //   } catch (error) {
-    //     toast.error(error.message, { theme: 'colored' });
-    //     setErrors(error.response.data.errors);
-    //   }
-    // } else {
-    //   toast.error('Token not available');
-    // }
-    // setSubmitting(false);
+    const token = user.token;
+    if (token) {
+      try {
+        await dispatch(register({ ...values, role: 'parent' }));
+        await dispatch(fetchUsers(token));
+        handleClose();
+      } catch (error) {
+        toast.error(error.message, { theme: 'colored' });
+        setErrors({ submit: error.message });
+      }
+    } else {
+      toast.error('Token not available');
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -71,7 +92,7 @@ export default function AddParent() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography variant="h4" sx={{ mb: '25px', fontWeight: 'bold' }}>
+          <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
             Ajouter un nouveau parent
           </Typography>
           <Formik
@@ -80,9 +101,10 @@ export default function AddParent() {
               lastName: '',
               email: '',
               phone: '',
-              gender: '',
               location: '',
-              //birthday : '',
+              gender: '',
+              role: 'parent',
+              status: 'active',
               password: '',
               passwordConfirm: '',
             }}
@@ -100,10 +122,9 @@ export default function AddParent() {
               isValid,
             }) => (
               <form onSubmit={handleSubmit}>
-                {/* <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}> */}
-                  <Box sx={{display:{xs:'block', md:'flex'}}}>
-                    <Box sx={{ mb: '15px' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box sx={{ display: { xs: 'block', md: 'flex' } }}>
+                    <Box sx={{  }}>
                       <TextField
                         sx={{ width: '95%' }}
                         id="firstName"
@@ -117,7 +138,7 @@ export default function AddParent() {
                         helperText={touched.firstName && errors.firstName}
                       />
                     </Box>
-                    <Box sx={{ mb: '15px' }}>
+                    <Box sx={{  }}>
                       <TextField
                         sx={{ width: '95%' }}
                         id="lastName"
@@ -131,187 +152,98 @@ export default function AddParent() {
                         helperText={touched.lastName && errors.lastName}
                       />
                     </Box>
-                    </Box>
-                    <Box sx={{ mb: '15px' }}>
-                      <TextField
-                        sx={{ width: '100%' }}
-                        id="phone"
-                        name="phone"
-                        label="Téléphone"
-                        variant="outlined"
-                        value={values.phone}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.phone && Boolean(errors.phone)}
-                        helperText={touched.phone && errors.phone}
-                      />
-                    </Box>
-                    <Box sx={{ mb: '15px' }}>
-                      <TextField
-                        sx={{ width: '100%' }}
-                        id="email"
-                        name="email"
-                        label="Email"
-                        variant="outlined"
-                        value={values.email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.email && Boolean(errors.email)}
-                        helperText={touched.email && errors.email}
-                      />
-                    </Box>
-                    <Box sx={{ mb: '15px' }}>
-                      <TextField
-                        sx={{ width: '100%' }}
-                        id="gender"
-                        name="gender"
-                        label="Gender"
-                        variant="outlined"
-                        value={values.cin}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.gender && Boolean(errors.gender)}
-                        helperText={touched.gender && errors.gender}
-                      />
-                    </Box>
-                  {/* </Grid> */}
-                    
-                    
-                    <Box sx={{ mb: '15px' }}>
-                      <TextField
-                        sx={{ width: '100%' }}
-                        id="location"
-                        name="location"
-                        label="Adresse"
-                        variant="outlined"
-                        value={values.phone}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.location && Boolean(errors.location)}
-                        helperText={touched.location && errors.location}
-                      />
-                    </Box>
-                    {/* <Box sx={{ mb: '15px' }}>
-                      <TextField
-                        sx={{ width: '100%' }}
-                        id="birthday"
-                        name="birthday"
-                        label="Birthday"
-                        variant="outlined"
-                        value={values.phone}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.birthday && Boolean(errors.birthday)}
-                        helperText={touched.birthday && errors.birthday}
-                      />
-                    </Box> */}
-                    <Box sx={{ mb: '15px' }}>
-                      <TextField
-                        sx={{ width: '100%' }}
-                        id="password"
-                        name="password"
-                        label="Générer mot de passe"
-                        variant="outlined"
-                        value={values.phone}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.password && Boolean(errors.password)}
-                        helperText={touched.password && errors.password}
-                      />
-                    </Box>
-                    {/* <Box sx={{}}>
-                      <TextField
-                        sx={{ width: '100%' }}
-                        id="password"
-                        name="password"
-                        label="password"
-                        variant="outlined"
-                        type="password"
-                        value={values.password}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.password && Boolean(errors.password)}
-                        helperText={touched.password && errors.password}
-                      />
-                    </Box> */}
-                  {/* </Grid>
-                </Grid> */}
-
-                {/* <Box sx={{ mb: '15px' }}>
+                  </Box>
                   <TextField
-                    sx={{ width: '100%' }}
-                    id="email"
-                    name="email"
-                    label="Email"
-                    variant="outlined"
-                    value={values.email}
+                    fullWidth
+                    label="Téléphone"
+                    name="phone"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.phone}
+                    error={touched.phone && Boolean(errors.phone)}
+                    helperText={touched.phone && errors.phone}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.email}
                     error={touched.email && Boolean(errors.email)}
                     helperText={touched.email && errors.email}
                   />
-                </Box>
-                <Box sx={{ mb: '15px' }}>
+                  <FormControl fullWidth error={Boolean(touched.gender && errors.gender)}>
+                    <InputLabel>Gender</InputLabel>
+                    <Select
+                      label="Gender"
+                      name="gender"
+                      value={values.gender}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    >
+                      <MenuItem value="male">Male</MenuItem>
+                      <MenuItem value="female">Female</MenuItem>
+                    </Select>
+                    {touched.gender && errors.gender && (
+                      <FormHelperText>{errors.gender}</FormHelperText>
+                    )}
+                  </FormControl>
                   <TextField
-                    sx={{ width: '100%' }}
-                    id="cin"
-                    name="cin"
-                    label="Cin"
-                    variant="outlined"
-                    value={values.cin}
+                    fullWidth
+                    label="Adresse"
+                    name="location"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.cin && Boolean(errors.cin)}
-                    helperText={touched.cin && errors.cin}
+                    value={values.location}
+                    error={touched.location && Boolean(errors.location)}
+                    helperText={touched.location && errors.location}
                   />
-                </Box>
-                <Box sx={{ mb: '15px' }}>
                   <TextField
-                    sx={{ width: '100%' }}
-                    id="fullName"
-                    name="fullName"
-                    label="fullName"
-                    variant="outlined"
-                    value={values.fullName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.fullName && Boolean(errors.fullName)}
-                    helperText={touched.fullName && errors.fullName}
-                  />
-                </Box>
-                <Box sx={{ mb: '15px' }}>
-                  <TextField
-                    sx={{ width: '100%' }}
-                    id="password"
+                    fullWidth
+                    label="Mot de passe"
                     name="password"
-                    label="password"
-                    variant="outlined"
                     type="password"
-                    value={values.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.password}
                     error={touched.password && Boolean(errors.password)}
                     helperText={touched.password && errors.password}
                   />
-                </Box>
-                <Box sx={{ mb: '15px' }}>
                   <TextField
-                    sx={{ width: '100%' }}
-                    id="passwordConfirm"
+                    sx={{ mb: '15px' }}
+                    fullWidth
+                    label="Confirmer mot de passe"
                     name="passwordConfirm"
-                    label="passwordConfirm"
-                    variant="outlined"
                     type="password"
-                    value={values.passwordConfirm}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    value={values.passwordConfirm}
                     error={touched.passwordConfirm && Boolean(errors.passwordConfirm)}
                     helperText={touched.passwordConfirm && errors.passwordConfirm}
                   />
+                </Box>
+                {errors.submit && (
+                  <Typography color="error" sx={{ mt: 2 }}>
+                    {errors.submit}
+                  </Typography>
+                )}
+                {/* <Box sx={{ mt: 3 }}>
+                  <LoadingButton
+                    disableElevation
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained"
+                    color="inherit"
+                    loading={isSubmitting}
+                  >
+                    Ajouter
+                  </LoadingButton>
                 </Box> */}
                 <Box sx={{ textAlign: 'end' }}>
                   <Button variant="outlined" sx={{ width: '85px' }} onClick={handleClose}>
-                    Cancel
+                    Annuler
                   </Button>
                   <Button
                     variant="contained"
@@ -320,7 +252,7 @@ export default function AddParent() {
                     sx={{ width: '85px', ml: '25px' }}
                     disabled={!isValid || isSubmitting}
                   >
-                    Save
+                    Ajouter
                   </Button>
                 </Box>
               </form>

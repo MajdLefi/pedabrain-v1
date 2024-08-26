@@ -10,6 +10,7 @@ const initialState = {
   message: ''
 };
 
+
 export const fetchUsers = createAsyncThunk('user/fetchUsers', async (token, thunkAPI) => {
   try {
     return await userService.getUsers(token);
@@ -22,6 +23,15 @@ export const fetchUsers = createAsyncThunk('user/fetchUsers', async (token, thun
 export const fetchUserById = createAsyncThunk('user/fetchUserById', async ({ userId, token }, thunkAPI) => {
   try {
     return await userService.getUserById(userId, token);
+  } catch (error) {
+    const message = (error.response && error.response.data && error.response.data.msg) || error.message || error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
+export const fetchUsersByRole = createAsyncThunk('user/fetchUsersByRole', async ({ token, role }, thunkAPI) => {
+  try {
+    return await userService.getUsersByRole(token, role);
   } catch (error) {
     const message = (error.response && error.response.data && error.response.data.msg) || error.message || error.toString();
     return thunkAPI.rejectWithValue(message);
@@ -55,7 +65,6 @@ export const deleteUser = createAsyncThunk('user/deleteUser', async ({ userId, t
     return thunkAPI.rejectWithValue(message);
   }
 });
-
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -85,6 +94,19 @@ const userSlice = createSlice({
     builder.addCase(fetchUserById.rejected, (state, action) => {
       state.loading = false;
       state.user = null;
+      state.error = action.error.message;
+    });
+
+    builder.addCase(fetchUsersByRole.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchUsersByRole.fulfilled, (state, action) => {
+      state.loading = false;
+      state.users = action.payload;
+      state.error = '';
+    });
+    builder.addCase(fetchUsersByRole.rejected, (state, action) => {
+      state.loading = false;
       state.error = action.error.message;
     });
 
@@ -138,5 +160,6 @@ const userSlice = createSlice({
     });
   }
 });
+
 
 export default userSlice.reducer;

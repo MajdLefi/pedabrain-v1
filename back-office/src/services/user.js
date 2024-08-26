@@ -15,6 +15,20 @@ const getUsers = async (token) => {
     }
 };
 
+// Get users
+const getUsersByRole = async (token, role) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/role/${role}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (err) {
+        return err.message;
+    }
+};
+
 // Get user by ID
 const getUserById = async (userId, token) => {
     try {
@@ -72,12 +86,28 @@ const deleteUser = async (userId, token) => {
     }
 };
 
+// change password user
+const changePassword = async (userId, userData, token) => {
+    try {
+        const response = await axios.delete(`${API_URL}/users/change-password/${userId}`, userData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (err) {
+        return err.message;
+    }
+};
+
 const userService = {
     getUsers,
+    getUsersByRole,
     getUserById,
     addUser,
     editUser,
-    deleteUser
+    deleteUser,
+    changePassword
 };
 
 export default userService;
