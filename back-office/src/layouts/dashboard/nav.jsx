@@ -36,7 +36,7 @@ export default function Nav({ openNav, onCloseNav }) {
     if (openNav) {
       onCloseNav();
     }
-  }, [pathname, openNav, onCloseNav]);
+  }, [pathname]);
 
   const renderAccount = (
     <Box
@@ -67,7 +67,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const renderMenu = (
     <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
-      {navConfig.map((item) => (
+      {navConfig?.map((item) => (
         <NavItem key={item.title} item={item} />
       ))}
     </Stack>
@@ -189,9 +189,5 @@ function NavItem({ item }) {
 }
 
 NavItem.propTypes = {
-  item: PropTypes.shape({
-    path: PropTypes.string,
-    title: PropTypes.string,
-    icon: PropTypes.node,
-  }).isRequired,
+  item: PropTypes.object,
 };
