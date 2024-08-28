@@ -81,23 +81,23 @@ exports.changePasswordValidator = [
     check('id').isMongoId().withMessage('Invalid User id format'),
     body("currentPassword").notEmpty().withMessage("You should enter your current password"),
     body("newPasswordConfirm").notEmpty().withMessage("You must enter the password confirm"),
-    body('newPassword').notEmpty().withMessage('You must enter new password')
-        .custom(async (val, { req }) => {
-            const user = await User.findById(req.params.id)
-            if (!user) {
-                throw new Error("There is no User for this id")
-            }
-            const isCorrectPassword = await bcrypt.compare(
-                req.body.currentPassword,
-                user.password
-            )
-            if (!isCorrectPassword) {
-                throw new Error("Incorrect current password")
-            }
-            if (val !== req.body.newPasswordConfirm) {
-                throw new Error('Password Confirmation incorrect');
-            }
-            return true
-        }),
+    // body('newPassword').notEmpty().withMessage('You must enter new password')
+    //     .custom(async (val, { req }) => {
+    //         const user = await User.findById(req.params.id)
+    //         if (!user) {
+    //             throw new Error("There is no User for this id")
+    //         }
+    //         const isCorrectPassword = await bcrypt.compare(
+    //             req.body.currentPassword,
+    //             user.password
+    //         )
+    //         if (!isCorrectPassword) {
+    //             throw new Error("Incorrect current password")
+    //         }
+    //         if (val !== req.body.newPasswordConfirm) {
+    //             throw new Error('Password Confirmation incorrect');
+    //         }
+    //         return true
+    //     }),
     validatorMiddleware
 ]

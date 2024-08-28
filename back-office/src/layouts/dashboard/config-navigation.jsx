@@ -31,11 +31,11 @@ export const adminNavConfig = [
     path: '/parents',
     icon: icon('ic_user'),
   },
-  // {
-  //   title: 'kids',
-  //   path: '/kids',
-  //   icon: icon('ic_user'),
-  // },
+  {
+    title: 'kids',
+    path: '/kids',
+    icon: icon('ic_user'),
+  },
   // {
   //   title: 'teachers',
   //   path: '/teachers',

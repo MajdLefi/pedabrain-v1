@@ -38,28 +38,33 @@ export default function ChangePassword() {
   const onSubmit = async (values, { setSubmitting, setErrors }) => {
     if (user && user.token) {
       try {
-        await dispatch(
-          changePassword({
-            userId: user.id,
-            token: user.token,
-            passwordData: {
-              currentPassword: values.currentPassword,
-              newPassword: values.newPassword,
-            },
-          })
-        ).unwrap(); // To handle rejections from the asyncThunk
-        //toast.success('Password updated successfully');
-        handleClose();
+        const response = await dispatch(changePassword({
+          userId: user.id,
+          token: user.token,
+          passwordData: {
+            currentPassword: "",
+            newPassword: values.newPassword,
+            newPasswordConfirm: values.newPasswordConfirm,
+          },
+        })).unwrap();
+  
+        // Check if the backend response indicates a password mismatch
+        if (response.status === 401 || response.data?.message === 'Incorrect current password') {
+          setErrors({ currentPassword: 'Incorrect current password' });
+        } else {
+          //toast.success('Password updated successfully');
+          handleClose();
+        }
       } catch (error) {
-        //toast.error(error || 'Failed to update password');
-        setErrors({ newPasswordConfirm: error });
+        // Handle other potential errors (e.g., network issues, server errors)
+        toast.error('An error occurred while updating your password.');
+        console.error(error);
       }
     } else {
-      //toast.error('User token not available');
+      toast.error('User token not available');
     }
     setSubmitting(false);
   };
-
   return (
     <Box>
       <Box onClick={handleOpen} sx={{ display: 'flex', cursor: 'pointer' }}>
@@ -79,8 +84,8 @@ export default function ChangePassword() {
           <Formik
             initialValues={{
               currentPassword: '',
-              newPassword: '',
               newPasswordConfirm: '',
+              newPassword: '',
             }}
             validationSchema={validationSchema}
             onSubmit={onSubmit}

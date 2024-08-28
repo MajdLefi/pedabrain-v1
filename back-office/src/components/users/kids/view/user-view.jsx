@@ -1,18 +1,15 @@
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { fetchUsersByRole } from 'src/store/reducers/userSlice';
 
-import { users } from 'src/_mock/user';
-
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
@@ -21,6 +18,7 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import AddKid from '../modals/AddKid';
 
 // ----------------------------------------------------------------------
 
@@ -31,11 +29,27 @@ export default function UserPage() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('firstName');
 
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.authSlice.user);
+  const users = useSelector((state) => state.userSlice.users?.data || []);
+  const token = user.token;
+
+  useEffect(() => {
+    //setLoading(true);
+    dispatch(fetchUsersByRole({ token, role: 'parent' }))
+      //.then(() => setLoading(false))
+      .catch((error) => {
+        console.error('Error fetching users:', error);
+        //setLoading(false);
+      });
+  }, [dispatch, token]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -47,18 +61,18 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
+      const newSelecteds = users.map((n) => n.firstName);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, firstName) => {
+    const selectedIndex = selected.indexOf(firstName);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, firstName);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -97,11 +111,11 @@ export default function UserPage() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Users</Typography>
-
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New User
-        </Button>
+        <Typography variant="h4">Liste des enfants</Typography>
+        <AddKid />
+        {/* <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          Nouveau Parent
+        </Button> */}
       </Stack>
 
       <Card>
@@ -122,12 +136,13 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
-                  { id: '' },
+                  { id: 'firstName', label: 'First name' },
+                  { id: 'lastName', label: 'Last name' },
+                  { id: 'phone', label: 'Phone' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'location', label: 'Location' },
+                  { id: 'status', label: 'Status', align: 'center' },
+                  { id: 'gender' },
                 ]}
               />
               <TableBody>
@@ -135,15 +150,20 @@ export default function UserPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.id}
-                      name={row.name}
+                      key={row._id}
+                      _id={row._id}
+                      firstName={row.firstName}
+                      lastName={row.lastName}
+                      phone={row.phone}
+                      email={row.email}
+                      location={row.location}
+                      gender={row.gender}
                       role={row.role}
                       status={row.status}
                       company={row.company}
                       avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
+                      selected={selected.indexOf(row.firstName) !== -1}
+                      handleClick={(event) => handleClick(event, row.firstName)}
                     />
                   ))}
 

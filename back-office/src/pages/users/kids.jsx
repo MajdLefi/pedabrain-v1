@@ -1,7 +1,14 @@
-import React from 'react'
+import { Helmet } from 'react-helmet-async';
+import { UserView } from 'src/components/users/kids/view';
 
 export default function KidsPage() {
   return (
-    <div>Kids</div>
+    <>
+    <Helmet>
+      <title> Enfants | PEDABRAIN </title>
+    </Helmet>
+
+    <UserView />
+  </>
   )
 }

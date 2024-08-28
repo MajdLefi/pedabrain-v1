@@ -14,15 +14,18 @@ import IconButton from '@mui/material/IconButton';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
+
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
+  _id,
   selected,
-  name,
-  avatarUrl,
-  company,
-  role,
-  isVerified,
+  firstName,
+  lastName,
+  phone,
+  email,
+  gender,
+  location,
   status,
   handleClick,
 }) {
@@ -35,6 +38,7 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
+  console.log(_id);
 
   return (
     <>
@@ -45,22 +49,25 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
+            {/* <Avatar alt={name} src={avatarUrl} /> */}
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {firstName}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
+        <TableCell>{lastName}</TableCell>
 
-        <TableCell>{role}</TableCell>
+        <TableCell>{phone}</TableCell>
 
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
+        <TableCell>{email}</TableCell>
+        <TableCell>{location}</TableCell>
 
         <TableCell>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
+
+        {/* <TableCell>{role}</TableCell> */}
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -76,17 +83,27 @@ export default function UserTableRow({
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         PaperProps={{
-          sx: { width: 140 },
+          sx: { width: 190 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+        <MenuItem>
+          {/* <EditParent
+            _id={_id}
+            firstName={firstName}
+            lastName={lastName}
+            phone={phone}
+            email={email}
+            location={location}
+            gender={gender}
+          /> */}
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+        <MenuItem>
+          {/* <EditStatus _id={_id} status={status} /> */}
+        </MenuItem>
+
+        <MenuItem sx={{ color: 'error.main' }}>
+          {/* <ChangePassword /> */}
         </MenuItem>
       </Popover>
     </>
@@ -94,12 +111,13 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
-  company: PropTypes.any,
-  handleClick: PropTypes.func,
-  isVerified: PropTypes.any,
-  name: PropTypes.any,
+  firstName: PropTypes.any,
+  lastName: PropTypes.any,
+  email: PropTypes.any,
+  phone: PropTypes.any,
+  location: PropTypes.any,
   role: PropTypes.any,
-  selected: PropTypes.any,
   status: PropTypes.string,
+  selected: PropTypes.any,
+  handleClick: PropTypes.func,
 };

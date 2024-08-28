@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Container, TextField, Modal, Button, Box, Typography, Grid } from '@mui/material';
+import { Container, TextField, Modal, Button, Box, Typography, Grid, Select, MenuItem } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import * as Yup from 'yup';
 import { fetchUsers, editUser } from 'src/store/reducers/userSlice';
 import { toast } from 'react-toastify';
 import Iconify from 'src/components/iconify';
@@ -32,6 +31,7 @@ export default function EditParent(props) {
   const dispatch = useDispatch();
   const parent = useSelector((state) => state.authSlice.user);
   console.log(props);
+  
   useEffect(() => {
     setUserData({
       firstName: props.firstName,
@@ -61,6 +61,13 @@ export default function EditParent(props) {
     setUserData((prevState) => ({
       ...prevState,
       [name]: value,
+    }));
+  };
+
+  const handleGenderChange = (e) => {
+    setUserData((prevState) => ({
+      ...prevState,
+      gender: e.target.value,
     }));
   };
 
@@ -141,15 +148,16 @@ export default function EditParent(props) {
               />
             </Box>
             <Box sx={{ mb: '15px' }}>
-              <TextField
+              <Select
                 sx={{ width: '100%' }}
                 id="gender"
                 name="gender"
-                label="Gender"
-                variant="outlined"
-                value={userData.cin}
-                onChange={onChange}
-              />
+                value={userData.gender}
+                onChange={handleGenderChange}
+              >
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+              </Select>
             </Box>
             <Box sx={{ mb: '15px' }}>
               <TextField

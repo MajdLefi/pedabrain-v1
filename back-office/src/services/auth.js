@@ -26,7 +26,7 @@ const register = async (userData) => {
 //change password
 const changePassword = async (userId, token, passwordData) => {
   try {
-    const response = await axios.patch(`${API_URL}/change-password/${userId}`, passwordData, {
+    const response = await axios.patch(`${API_URL}/users/change-password/${userId}`, passwordData, {
       headers: {
         Authorization: `Bearer ${token}`
       }
