@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Container, TextField, Modal, Button, Box, Typography, Grid, Select, MenuItem } from '@mui/material';
+import { Modal, Button, Box, Typography, TextField, Select, MenuItem } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers, editUser } from 'src/store/reducers/userSlice';
-import { toast } from 'react-toastify';
+import { fetchKids, editKid } from 'src/store/reducers/kidSlice';
 import Iconify from 'src/components/iconify';
-import { fetchUsersByRole } from 'src/store/reducers/userSlice';
 
 const style = {
   position: 'absolute',
@@ -18,66 +16,65 @@ const style = {
   p: 5,
 };
 
-export default function EditParent(props) {
+export default function EditKid(props) {
   const [open, setOpen] = useState(false);
-  const [userData, setUserData] = useState({
+  const [kidData, setKidData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
-    phone: '',
-    location: '',
+    age: '',
     gender: '',
   });
+
   const dispatch = useDispatch();
-  const parent = useSelector((state) => state.authSlice.user);
-  
+  const user = useSelector((state) => state.authSlice.user);
+  const token = user.token;
+
   useEffect(() => {
-    setUserData({
-      firstName: props.firstName,
-      lastName: props.lastName,
-      email: props.email,
-      phone: props.phone,
-      location: props.location,
-      gender: props.gender,
+    setKidData({
+      firstName: props.firstName || '',
+      lastName: props.lastName || '',
+      age: props.age || '',
+      gender: props.gender || '',
     });
   }, [props]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setUserData({
-      firstName: props.firstName,
-      lastName: props.lastName,
-      email: props.email,
-      phone: props.phone,
-      location: props.location,
-      gender: props.gender,
+    setKidData({
+      firstName: props.firstName || '',
+      lastName: props.lastName || '',
+      age: props.age || '',
+      gender: props.gender || '',
     });
   };
 
   const onChange = (e) => {
     const { name, value } = e.target;
-    setUserData((prevState) => ({
+    setKidData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
 
   const handleGenderChange = (e) => {
-    setUserData((prevState) => ({
+    setKidData((prevState) => ({
       ...prevState,
       gender: e.target.value,
     }));
   };
 
   const handleSubmit = async (e) => {
-    const token = parent.token; 
-
     e.preventDefault();
     if (token) {
-      await dispatch(editUser({ userId: props._id, userData: userData, token }));
-      await dispatch(fetchUsersByRole({ token, role: 'parent' }));
-      handleClose();
+      try {
+        await dispatch(editKid({ kidId: props._id, kidData, token }));
+        await dispatch(fetchKids( token ));
+
+        handleClose();
+      } catch (error) {
+        console.error('Error updating kid:', error);
+      }
     } else {
       console.error('Token not available');
     }
@@ -96,89 +93,66 @@ export default function EditParent(props) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography variant="h4" sx={{ mb: '25px', fontWeight: 'bold' }}>
-            Modifier ce parent
+          <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
+            Modifier cet enfant
           </Typography>
           <form onSubmit={handleSubmit}>
-            <Box sx={{ display: { xs: 'block', md: 'flex' } }}>
-              <Box sx={{ mb: '15px' }}>
+            <Box sx={{ display: { xs: 'block', md: 'flex' }, gap: 2 }}>
+              <Box sx={{ mb: '15px', flex: 1 }}>
                 <TextField
-                  sx={{ width: '95%' }}
+                  fullWidth
                   id="firstName"
                   name="firstName"
                   label="Prénom"
                   variant="outlined"
-                  value={userData.firstName}
+                  value={kidData.firstName}
                   onChange={onChange}
                 />
               </Box>
-              <Box sx={{ mb: '15px' }}>
+              <Box sx={{ mb: '15px', flex: 1 }}>
                 <TextField
-                  sx={{ width: '95%' }}
+                  fullWidth
                   id="lastName"
                   name="lastName"
                   label="Nom"
                   variant="outlined"
-                  value={userData.lastName}
+                  value={kidData.lastName}
                   onChange={onChange}
                 />
               </Box>
             </Box>
             <Box sx={{ mb: '15px' }}>
               <TextField
-                sx={{ width: '100%' }}
-                id="phone"
-                name="phone"
-                label="Téléphone"
+                fullWidth
+                id="age"
+                name="age"
+                label="Âge"
                 variant="outlined"
-                value={userData.phone}
-                onChange={onChange}
-              />
-            </Box>
-            <Box sx={{ mb: '15px' }}>
-              <TextField
-                sx={{ width: '100%' }}
-                id="email"
-                name="email"
-                label="Email"
-                variant="outlined"
-                value={userData.email}
+                value={kidData.age}
                 onChange={onChange}
               />
             </Box>
             <Box sx={{ mb: '15px' }}>
               <Select
-                sx={{ width: '100%' }}
+                fullWidth
                 id="gender"
                 name="gender"
-                value={userData.gender}
+                value={kidData.gender}
                 onChange={handleGenderChange}
               >
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
               </Select>
             </Box>
-            <Box sx={{ mb: '15px' }}>
-              <TextField
-                sx={{ width: '100%' }}
-                id="location"
-                name="location"
-                label="Adresse"
-                variant="outlined"
-                value={userData.location}
-                onChange={onChange}
-              />
-            </Box>
             <Box sx={{ textAlign: 'end' }}>
               <Button variant="outlined" sx={{ width: '85px' }} onClick={handleClose}>
-                Cancel
+                Annuler
               </Button>
               <Button
                 variant="contained"
-                color="info"
+                color="success"
                 type="submit"
                 sx={{ width: '85px', ml: '25px' }}
-                //disabled={!isValid || isSubmitting}
               >
                 Modifier
               </Button>

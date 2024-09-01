@@ -8,6 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { fetchKids } from 'src/store/reducers/kidSlice';
 import { fetchUsersByRole } from 'src/store/reducers/userSlice';
 
 import Scrollbar from 'src/components/scrollbar';
@@ -24,31 +25,26 @@ import AddKid from '../modals/AddKid';
 
 export default function UserPage() {
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
-
   const [orderBy, setOrderBy] = useState('firstName');
-
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const dispatch = useDispatch();
+  const kids = useSelector((state) => state.kidSlice.kids?.data || []);
 
-  const user = useSelector((state) => state.authSlice.user);
-  const users = useSelector((state) => state.userSlice.users?.data || []);
-  const token = user.token;
+  //const user = useSelector((state) => state.authSlice.user);
+  //const token = user.token;
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  const token = user && user?.token;
 
   useEffect(() => {
-    //setLoading(true);
-    dispatch(fetchUsersByRole({ token, role: 'parent' }))
-      //.then(() => setLoading(false))
-      .catch((error) => {
-        console.error('Error fetching users:', error);
-        //setLoading(false);
-      });
+    dispatch(fetchKids(token)).catch((error) => {
+      console.error('Error fetching users:', error);
+      //setLoading(false);
+    });
   }, [dispatch, token]);
 
   const handleSort = (event, id) => {
@@ -61,7 +57,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.firstName);
+      const newSelecteds = kids.map((n) => n.firstName);
       setSelected(newSelecteds);
       return;
     }
@@ -101,7 +97,7 @@ export default function UserPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: kids,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -113,9 +109,6 @@ export default function UserPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Liste des enfants</Typography>
         <AddKid />
-        {/* <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          Nouveau Parent
-        </Button> */}
       </Stack>
 
       <Card>
@@ -131,18 +124,17 @@ export default function UserPage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={users.length}
+                rowCount={kids.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'firstName', label: 'First name' },
                   { id: 'lastName', label: 'Last name' },
-                  { id: 'phone', label: 'Phone' },
-                  { id: 'email', label: 'Email' },
-                  { id: 'location', label: 'Location' },
-                  { id: 'status', label: 'Status', align: 'center' },
-                  { id: 'gender' },
+                  { id: 'age', label: 'Age' },
+                  { id: 'gender', label: 'Gender' },
+                  { id: 'parentId', label: 'Parent' },
+                  { id: 'status', label: 'status' },
                 ]}
               />
               <TableBody>
@@ -150,27 +142,21 @@ export default function UserPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
+                      token={token}
                       key={row._id}
                       _id={row._id}
                       firstName={row.firstName}
                       lastName={row.lastName}
-                      phone={row.phone}
-                      email={row.email}
-                      location={row.location}
                       gender={row.gender}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
+                      parentId={row.parentId}
+                      age={row.age}
                       avatarUrl={row.avatarUrl}
                       selected={selected.indexOf(row.firstName) !== -1}
                       handleClick={(event) => handleClick(event, row.firstName)}
                     />
                   ))}
 
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                />
+                <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, kids.length)} />
 
                 {notFound && <TableNoData query={filterName} />}
               </TableBody>
@@ -181,7 +167,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={users.length}
+          count={kids.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

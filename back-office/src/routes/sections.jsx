@@ -7,6 +7,7 @@ export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ParentsPage = lazy(() => import('src/pages/users/parents'));
 export const KidsPage = lazy(() => import('src/pages/users/kids'));
+export const ParentKidsPage = lazy(() => import('src/pages/users/parent/kids/kidsList'));
 export const TeachersPage = lazy(() => import('src/pages/users/teachers'));
 export const PsychologistsPage = lazy(() => import('src/pages/users/psychologists'));
 export const IndexPage = lazy(() => import('src/pages/app'));
@@ -39,6 +40,7 @@ export default function Router() {
         { element: <IndexPage />, index: true },
         { path: 'parents', element: <ProtectedRoute element={<ParentsPage />} /> },
         { path: 'kids', element: <ProtectedRoute element={<KidsPage />} /> },
+        { path: '/parent/kids', element: <ProtectedRoute element={<ParentKidsPage />} /> },
         { path: 'teachers', element: <ProtectedRoute element={<TeachersPage />} /> },
         { path: 'psychologists', element: <ProtectedRoute element={<PsychologistsPage />} /> },
       ],

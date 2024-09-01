@@ -3,22 +3,22 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
     {
-        email : {
+        email: {
             type: String,
             unique: true,
             required: [true, 'Email required']
         },
         firstName: {
             type: String,
-            required: [true, 'firstName required']
+            required: [true, 'First name required']
         },
         lastName: {
             type: String,
-            required: [true, 'lastName required']
+            required: [true, 'Last name required']
         },
         gender: {
             type: String,
-            required: [true, 'gender required'],
+            required: [true, 'Gender required'],
             enum: ["male", "female"],
         },
         birthday: {
@@ -43,16 +43,23 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: [true, 'password required'],
+            required: [true, 'Password required'],
             minlength: [6, 'Too short password']
         },
         passwordChangedAt: Date,
         passwordResetCode: String,
         passwordResetExpires: Date,
         passwordResetVerified: Boolean,
+        // Add the kids field
+        kids: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Kid'
+            }
+        ]
     },
     { timestamps: true }
-)
+);
 
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
@@ -63,4 +70,4 @@ userSchema.pre('save', async function (next) {
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User
+module.exports = User;

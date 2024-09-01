@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { fetchUsersByRole } from 'src/store/reducers/userSlice';
-import { addKid, fetchKids } from 'src/store/reducers/kidSlice';
+import { addKid, fetchKids, fetchKidsByParent } from 'src/store/reducers/kidSlice';
 import { toast } from 'react-toastify';
 import Iconify from 'src/components/iconify';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -61,7 +61,9 @@ export default function AddKid() {
     if (token) {
       try {
         await dispatch(addKid({ kidData: values, token }));
-        await dispatch(fetchKids(token));
+        await dispatch(fetchKidsByParent({ parentId: user.id, token }));
+        
+        //await dispatch(fetchKids(token));
         handleClose();
       } catch (error) {
         toast.error(error.message, { theme: 'colored' });
@@ -81,6 +83,7 @@ export default function AddKid() {
   return (
     <Box>
       <Button
+      sx={{mb:'30px'}}
         onClick={handleOpen}
         variant="contained"
         color="inherit"
@@ -104,7 +107,7 @@ export default function AddKid() {
               lastName: '',
               age: '',
               gender: '',
-              parentId: '',
+              parentId: user?.id,
             }}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
@@ -165,23 +168,7 @@ export default function AddKid() {
                     error={touched.age && Boolean(errors.age)}
                     helperText={touched.age && errors.age}
                   />
-                  <Autocomplete
-                    disablePortal
-                    options={parentOptions}
-                    getOptionLabel={(option) => option.fullName}
-                    sx={{ width: '100%' }}
-                    onChange={(event, value) => {
-                      setFieldValue('parentId', value ? value._id : '');
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Parent"
-                        error={touched.parentId && Boolean(errors.parentId)}
-                        helperText={touched.parentId && errors.parentId}
-                      />
-                    )}
-                  />
+                 
                   <FormControl fullWidth error={Boolean(touched.gender && errors.gender)}>
                     <InputLabel>Gender</InputLabel>
                     <Select

@@ -13,6 +13,11 @@ export const parentNavConfig = [
     icon: icon('ic_analytics'),
   },
   {
+    title: 'Enfants',
+    path: '/parent/kids',
+    icon: icon('ic_user'),
+  },
+  {
     title: 'seance',
     path: '/seance',
     icon: icon('ic_lock'),

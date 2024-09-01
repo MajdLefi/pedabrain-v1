@@ -1,19 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { fetchUserById } from 'src/store/reducers/userSlice'; // Adjust the import path as needed
 
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
-import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Popover from '@mui/material/Popover';
 
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-
+import { Avatar, Box } from '@mui/material';
+import EditKid from './modals/EditKid';
 
 // ----------------------------------------------------------------------
 
@@ -22,14 +23,39 @@ export default function UserTableRow({
   selected,
   firstName,
   lastName,
-  phone,
-  email,
   gender,
-  location,
-  status,
+  age,
+  parentId,
+  token,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
+  const [parentFullName, setParentFullName] = useState('');
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    let isMounted = true; 
+    const fetchParent = async () => {
+      if (parentId) {
+        try {
+          const result = await dispatch(fetchUserById({ userId: parentId, token }));
+
+          if (fetchUserById.fulfilled.match(result)) {
+            const parent = result.payload.data; // Adjust based on your response structure
+            setParentFullName(`${parent.firstName} ${parent.lastName}`);
+          } else {
+            setParentFullName('Error loading name');
+          }
+        } catch (error) {
+          // console.error('Error fetching parent data:', error.message);
+          // setParentFullName('Error loading name');
+        }
+      }
+    };
+
+    fetchParent();
+  }, [parentId, dispatch, token]);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -38,18 +64,30 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
-  console.log(_id);
+
 
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
+        {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
+        </TableCell> */}
+
+        <Box sx={{ mr: '50px', ml: '10px', pt: '15px' }}>
+          <TableCell component="th" scope="row" padding="none">
+            <Stack direction="row" alignItems="center" spacing={2}>
+              {gender === 'male' ? (
+                <Avatar alt="avatar" src={`/assets/images/avatars/avatar_${2}.jpg`} />
+              ) : (
+                <Avatar alt="avatar" src={`/assets/images/avatars/avatar_${1}.jpg`} />
+              )}
+              {/* <Avatar alt="avatar" src={`/assets/images/avatars/avatar_${2}.jpg`} /> */}
+            </Stack>
+          </TableCell>
+        </Box>
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            {/* <Avatar alt={name} src={avatarUrl} /> */}
             <Typography variant="subtitle2" noWrap>
               {firstName}
             </Typography>
@@ -57,17 +95,9 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell>{lastName}</TableCell>
-
-        <TableCell>{phone}</TableCell>
-
-        <TableCell>{email}</TableCell>
-        <TableCell>{location}</TableCell>
-
-        <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
-        </TableCell>
-
-        {/* <TableCell>{role}</TableCell> */}
+        <TableCell>{age}</TableCell>
+        <TableCell>{gender}</TableCell>
+        <TableCell>{parentFullName}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -87,23 +117,13 @@ export default function UserTableRow({
         }}
       >
         <MenuItem>
-          {/* <EditParent
+          <EditKid
             _id={_id}
             firstName={firstName}
             lastName={lastName}
-            phone={phone}
-            email={email}
-            location={location}
+            age={age}
             gender={gender}
-          /> */}
-        </MenuItem>
-
-        <MenuItem>
-          {/* <EditStatus _id={_id} status={status} /> */}
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          {/* <ChangePassword /> */}
+          />
         </MenuItem>
       </Popover>
     </>
@@ -111,13 +131,13 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  firstName: PropTypes.any,
-  lastName: PropTypes.any,
-  email: PropTypes.any,
-  phone: PropTypes.any,
-  location: PropTypes.any,
-  role: PropTypes.any,
-  status: PropTypes.string,
-  selected: PropTypes.any,
-  handleClick: PropTypes.func,
+  _id: PropTypes.string.isRequired,
+  selected: PropTypes.bool.isRequired,
+  firstName: PropTypes.string.isRequired,
+  lastName: PropTypes.string.isRequired,
+  gender: PropTypes.string.isRequired,
+  age: PropTypes.number.isRequired,
+  parentId: PropTypes.string,
+  token: PropTypes.string.isRequired,
+  handleClick: PropTypes.func.isRequired,
 };

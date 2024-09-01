@@ -112,7 +112,7 @@ export default function UserPage() {
 
   return (
     <Container>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+      <Stack direction="row" alignItems="start" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Liste des parents</Typography>
         <AddParent />
         {/* <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
@@ -129,7 +129,7 @@ export default function UserPage() {
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
+            <Table sx={{ minWidth: 700 }}>
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
@@ -138,13 +138,13 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'firstName', label: 'First name' },
-                  { id: 'lastName', label: 'Last name' },
+                  { id: 'firstName', label: 'Prénom' },
+                  { id: 'lastName', label: 'Nom' },
                   { id: 'phone', label: 'Phone' },
                   { id: 'email', label: 'Email' },
-                  { id: 'location', label: 'Location' },
+                  { id: 'location', label: 'Adresse' },
                   { id: 'status', label: 'Status', align: 'center' },
-                  { id: 'gender' },
+                  { id: 'kids', label: 'Enfants', align: 'center' },
                 ]}
               />
               <TableBody>

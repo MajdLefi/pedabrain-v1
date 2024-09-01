@@ -16,6 +16,7 @@ import Iconify from 'src/components/iconify';
 import EditParent from './modals/EditParent';
 import EditStatus from './modals/EditStatus';
 import ChangePassword from './modals/ChangePassword';
+import KidDetails from './modals/KIdDetails';
 
 // ----------------------------------------------------------------------
 
@@ -67,6 +68,10 @@ export default function UserTableRow({
 
         <TableCell>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+        </TableCell>
+
+        <TableCell>
+          <KidDetails />
         </TableCell>
 
         {/* <TableCell>{role}</TableCell> */}
