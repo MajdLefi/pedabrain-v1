@@ -19,7 +19,7 @@ export const parentNavConfig = [
   },
   {
     title: 'seance',
-    path: '/seance',
+    path: '/parent/sessions',
     icon: icon('ic_lock'),
   },
  
@@ -39,6 +39,11 @@ export const adminNavConfig = [
   {
     title: 'kids',
     path: '/kids',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'sessions',
+    path: '/sessions',
     icon: icon('ic_user'),
   },
   // {
