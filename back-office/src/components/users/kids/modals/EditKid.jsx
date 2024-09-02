@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Modal, Button, Box, Typography, TextField, Select, MenuItem } from '@mui/material';
+import { Modal, Button, Box, Typography, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchKids, editKid } from 'src/store/reducers/kidSlice';
+import { fetchUsersByRole } from 'src/store/reducers/userSlice';
+import Autocomplete from '@mui/material/Autocomplete';
 import Iconify from 'src/components/iconify';
 
 const style = {
@@ -23,11 +25,19 @@ export default function EditKid(props) {
     lastName: '',
     age: '',
     gender: '',
+    parentId: '',
   });
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.authSlice.user);
+  const parents = useSelector((state) => state.userSlice.users?.data || []);
   const token = user.token;
+
+  useEffect(() => {
+    dispatch(fetchUsersByRole({ token, role: 'parent' })).catch((error) => {
+      console.error('Error fetching users:', error);
+    });
+  }, [dispatch, token]);
 
   useEffect(() => {
     setKidData({
@@ -35,6 +45,7 @@ export default function EditKid(props) {
       lastName: props.lastName || '',
       age: props.age || '',
       gender: props.gender || '',
+      parentId: props.parentId || '',
     });
   }, [props]);
 
@@ -46,6 +57,7 @@ export default function EditKid(props) {
       lastName: props.lastName || '',
       age: props.age || '',
       gender: props.gender || '',
+      parentId: props.parentId || '',
     });
   };
 
@@ -64,12 +76,19 @@ export default function EditKid(props) {
     }));
   };
 
+  const handleParentChange = (event, value) => {
+    setKidData((prevState) => ({
+      ...prevState,
+      parentId: value ? value._id : '',
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (token) {
       try {
         await dispatch(editKid({ kidId: props._id, kidData, token }));
-        await dispatch(fetchKids( token ));
+        await dispatch(fetchKids(token));
 
         handleClose();
       } catch (error) {
@@ -79,6 +98,11 @@ export default function EditKid(props) {
       console.error('Token not available');
     }
   };
+
+  const parentOptions = parents.map((parent) => ({
+    ...parent,
+    fullName: `${parent.firstName} ${parent.lastName}`,
+  }));
 
   return (
     <Box>
@@ -133,16 +157,34 @@ export default function EditKid(props) {
               />
             </Box>
             <Box sx={{ mb: '15px' }}>
-              <Select
-                fullWidth
-                id="gender"
-                name="gender"
-                value={kidData.gender}
-                onChange={handleGenderChange}
-              >
-                <MenuItem value="male">Male</MenuItem>
-                <MenuItem value="female">Female</MenuItem>
-              </Select>
+              <FormControl fullWidth>
+                <InputLabel>Gender</InputLabel>
+                <Select
+                  id="gender"
+                  name="gender"
+                  value={kidData.gender}
+                  onChange={handleGenderChange}
+                >
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <Box sx={{ mb: '15px' }}>
+              <Autocomplete
+                disablePortal
+                options={parentOptions}
+                getOptionLabel={(option) => option.fullName}
+                sx={{ width: '100%' }}
+                value={parentOptions.find(parent => parent._id === kidData.parentId) || null}
+                onChange={handleParentChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Parent"
+                  />
+                )}
+              />
             </Box>
             <Box sx={{ textAlign: 'end' }}>
               <Button variant="outlined" sx={{ width: '85px' }} onClick={handleClose}>
