@@ -154,6 +154,7 @@ export default function UserPage() {
                     <UserTableRow
                       key={row._id}
                       _id={row._id}
+                      token={token}
                       firstName={row.firstName}
                       lastName={row.lastName}
                       phone={row.phone}

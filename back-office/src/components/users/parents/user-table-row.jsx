@@ -31,6 +31,7 @@ export default function UserTableRow({
   location,
   status,
   handleClick,
+  token
 }) {
   const [open, setOpen] = useState(null);
 
@@ -41,7 +42,6 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
-  console.log(_id);
 
   return (
     <>
@@ -71,7 +71,7 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell>
-          <KidDetails />
+          <KidDetails _id={_id} token={token}/>
         </TableCell>
 
         {/* <TableCell>{role}</TableCell> */}

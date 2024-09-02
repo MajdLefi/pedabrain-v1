@@ -57,7 +57,6 @@ exports.deleteOne = (Model) =>
         res.status(204).send();
 })
 
-//auth 
 
 exports.signup = (Model) => asyncHandler(async (req, res, next) => {
     const user = await Model.create(req.body);
@@ -76,7 +75,6 @@ exports.login = (Model) => asyncHandler(async (req, res, next) => {
     const token = createToken(user._id);
     res.status(200).json({ data : user, token, msg: "Login successful" });
 });
-
 
 exports.changeUserPassword =(Model) => asyncHandler(async (req, res, next) => {
     const model = await Model.findByIdAndUpdate(
