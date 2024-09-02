@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   MenuItem,
   InputLabel,
@@ -10,8 +10,12 @@ import {
   FormControl,
   Select,
   FormHelperText,
-  Autocomplete
 } from '@mui/material';
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -21,6 +25,8 @@ import { toast } from 'react-toastify';
 import Iconify from 'src/components/iconify';
 import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Autocomplete from '@mui/material/Autocomplete';
+import { fetchKidsByParent } from 'src/store/reducers/kidSlice';
 
 const style = {
   position: 'absolute',
@@ -49,12 +55,20 @@ const validationSchema = Yup.object().shape({
     .required('Confirm password is required'),
 });
 
-export default function AddSession() {
+export default function AddParent() {
   const [open, setOpen] = useState(false);
-  const [gender, setGender] = useState('');
+  const [value, setValue] = useState(dayjs('2022-04-17'));
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.authSlice.user);
+  const kids = useSelector((state) => state.kidSlice.kids?.data || []);
+  const token = user.token;
+
+  useEffect(() => {
+    dispatch(fetchKidsByParent({ parentId: user.id, token })).catch((error) => {
+      console.error('Error fetching users:', error);
+    });
+  }, [dispatch, token]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -76,6 +90,11 @@ export default function AddSession() {
     setSubmitting(false);
   };
 
+  const parentOptions = kids.map((kid) => ({
+    ...kid,
+    fullName: `${kid.firstName} ${kid.lastName}`,
+  }));
+
   return (
     <Box>
       <Button
@@ -84,7 +103,7 @@ export default function AddSession() {
         color="inherit"
         startIcon={<Iconify icon="eva:plus-fill" />}
       >
-        Nouveau Parent
+        Nouvelle demande
       </Button>
       <Modal
         open={open}
@@ -94,7 +113,7 @@ export default function AddSession() {
       >
         <Box sx={style}>
           <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
-            Ajouter un nouveau parent
+            Demander une séance
           </Typography>
           <Formik
             initialValues={{
@@ -124,104 +143,60 @@ export default function AddSession() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: { xs: 'block', md: 'flex' } }}>
-                    <Box sx={{  }}>
-                      <TextField
-                        sx={{ width: '95%' }}
-                        id="firstName"
-                        name="firstName"
-                        label="Prénom"
-                        variant="outlined"
-                        value={values.firstName}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.firstName && Boolean(errors.firstName)}
-                        helperText={touched.firstName && errors.firstName}
+                  <Box>
+                    <Autocomplete
+                      disablePortal
+                      options={parentOptions}
+                      getOptionLabel={(option) => option.fullName}
+                      sx={{ width: '100%', mb: '20px' }}
+                      onChange={(event, value) => {
+                        setFieldValue('parentId', value ? value._id : '');
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Enfant"
+                          error={touched.parentId && Boolean(errors.parentId)}
+                          helperText={touched.parentId && errors.parentId}
+                        />
+                      )}
+                    />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        sx={{ width: '100%', mb: '20px' }}
+                        label="Choisir le jour"
+                        value={value}
+                        onChange={(newValue) => setValue(newValue)}
                       />
-                    </Box>
-                    <Box sx={{  }}>
-                      <TextField
-                        sx={{ width: '95%' }}
-                        id="lastName"
-                        name="lastName"
-                        label="Nom"
-                        variant="outlined"
-                        value={values.lastName}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.lastName && Boolean(errors.lastName)}
-                        helperText={touched.lastName && errors.lastName}
-                      />
-                    </Box>
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <TimePicker sx={{ width: '100%' }} label="Choisir l'heure" />
+                    </LocalizationProvider>
                   </Box>
-                  <TextField
-                    fullWidth
-                    label="Téléphone"
-                    name="phone"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.phone}
-                    error={touched.phone && Boolean(errors.phone)}
-                    helperText={touched.phone && errors.phone}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    name="email"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.email}
-                    error={touched.email && Boolean(errors.email)}
-                    helperText={touched.email && errors.email}
-                  />
                   <FormControl fullWidth error={Boolean(touched.gender && errors.gender)}>
-                    <InputLabel>Gender</InputLabel>
+                    <InputLabel>Motif</InputLabel>
                     <Select
-                      label="Gender"
-                      name="gender"
+                      label="Motif"
+                      name="motif"
                       value={values.gender}
                       onChange={handleChange}
                       onBlur={handleBlur}
                     >
-                      <MenuItem value="male">Male</MenuItem>
-                      <MenuItem value="female">Female</MenuItem>
+                      <MenuItem value="motif1">Motif 1</MenuItem>
+                      <MenuItem value="motif2">Motif 2</MenuItem>
+                      <MenuItem value="motif3">Motif 3</MenuItem>
+                      <MenuItem value="motif4">Motif 4</MenuItem>
                     </Select>
                     {touched.gender && errors.gender && (
                       <FormHelperText>{errors.gender}</FormHelperText>
                     )}
                   </FormControl>
                   <TextField
-                    fullWidth
-                    label="Adresse"
-                    name="location"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.location}
-                    error={touched.location && Boolean(errors.location)}
-                    helperText={touched.location && errors.location}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Mot de passe"
-                    name="password"
-                    type="password"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.password}
-                    error={touched.password && Boolean(errors.password)}
-                    helperText={touched.password && errors.password}
-                  />
-                  <TextField
-                    sx={{ mb: '15px' }}
-                    fullWidth
-                    label="Confirmer mot de passe"
-                    name="passwordConfirm"
-                    type="password"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.passwordConfirm}
-                    error={touched.passwordConfirm && Boolean(errors.passwordConfirm)}
-                    helperText={touched.passwordConfirm && errors.passwordConfirm}
+                    sx={{ mb: '20px' }}
+                    id="outlined-multiline-static"
+                    label="Remarques"
+                    multiline
+                    rows={4}
                   />
                 </Box>
                 {errors.submit && (

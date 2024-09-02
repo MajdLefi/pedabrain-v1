@@ -18,7 +18,12 @@ export const parentNavConfig = [
     icon: icon('ic_user'),
   },
   {
-    title: 'seance',
+    title: 'Demande de consultation',
+    path: '/parent/session-demand',
+    icon: icon('ic_lock'),
+  },
+  {
+    title: 'Historique de consultation',
     path: '/parent/sessions',
     icon: icon('ic_lock'),
   },
@@ -32,18 +37,23 @@ export const adminNavConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'parents',
+    title: 'Parents',
     path: '/parents',
     icon: icon('ic_user'),
   },
   {
-    title: 'kids',
+    title: 'Enfants',
     path: '/kids',
     icon: icon('ic_user'),
   },
   {
-    title: 'sessions',
+    title: 'Séances',
     path: '/sessions',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'Historique des séances',
+    path: '/sessions-history',
     icon: icon('ic_user'),
   },
   // {
@@ -56,11 +66,11 @@ export const adminNavConfig = [
   //   path: '/psychologists',
   //   icon: icon('ic_user'),
   // },
-  {
-    title: 'seance',
-    path: '/seance',
-    icon: icon('ic_lock'),
-  },
+  // {
+  //   title: 'seance',
+  //   path: '/seance',
+  //   icon: icon('ic_lock'),
+  // },
 ]
 
 // export default navConfig;

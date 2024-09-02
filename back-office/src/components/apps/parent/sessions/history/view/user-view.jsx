@@ -8,10 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress for loading indicator
-import TableRow from '@mui/material/TableRow'; // Import TableRow
-import TableCell from '@mui/material/TableCell'; // Import TableCell
-import { fetchKids } from 'src/store/reducers/kidSlice';
+import { fetchSessionsByParent } from 'src/store/reducers/sessionSlice';
 import { fetchUsersByRole } from 'src/store/reducers/userSlice';
 
 import Scrollbar from 'src/components/scrollbar';
@@ -22,33 +19,36 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-import AddKid from '../modals/AddKid';
+import AddSession from '../modals/AddSession';
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function SessionDemand() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('firstName');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [loading, setLoading] = useState(true); // Add loading state
 
   const dispatch = useDispatch();
-  const kids = useSelector((state) => state.kidSlice.kids?.data || []);
+  const sessions = useSelector((state) => state.sessionSlice.sessions?.data || []);
+  console.log(sessions);
   
+  //const user = useSelector((state) => state.authSlice.user);
+  //const token = user.token;
+
   const user = JSON.parse(localStorage.getItem('user'));
   const token = user && user?.token;
 
+  console.log(user);
+
   useEffect(() => {
-    setLoading(true); // Set loading to true before fetching data
-    dispatch(fetchKids(token))
-      .then(() => setLoading(false)) // Set loading to false after data is fetched
-      .catch((error) => {
-        console.error('Error fetching kids:', error);
-        setLoading(false); // Set loading to false on error
-      });
+    dispatch(fetchSessionsByParent({parentId : user.id, token}))
+    .catch((error) => {
+      console.error('Error fetching users:', error);
+      //setLoading(false);
+    });
   }, [dispatch, token]);
 
   const handleSort = (event, id) => {
@@ -61,7 +61,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = kids.map((n) => n.firstName);
+      const newSelecteds = sessions.map((n) => n.firstName);
       setSelected(newSelecteds);
       return;
     }
@@ -101,7 +101,7 @@ export default function UserPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: kids,
+    inputData: sessions,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -111,8 +111,8 @@ export default function UserPage() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Liste des enfants</Typography>
-        <AddKid />
+        <Typography variant="h4">Liste des séances</Typography>
+        <AddSession />
       </Stack>
 
       <Card>
@@ -128,7 +128,7 @@ export default function UserPage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={kids.length}
+                rowCount={sessions.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
@@ -142,37 +142,27 @@ export default function UserPage() {
                 ]}
               />
               <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      <CircularProgress />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <>
-                    {dataFiltered
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row) => (
-                        <UserTableRow
-                          token={token}
-                          key={row._id}
-                          _id={row._id}
-                          firstName={row.firstName}
-                          lastName={row.lastName}
-                          gender={row.gender}
-                          parentId={row.parentId}
-                          age={row.age}
-                          avatarUrl={row.avatarUrl}
-                          selected={selected.indexOf(row.firstName) !== -1}
-                          handleClick={(event) => handleClick(event, row.firstName)}
-                        />
-                      ))}
+                {dataFiltered
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => (
+                    <UserTableRow
+                      token={token}
+                      key={row._id}
+                      _id={row._id}
+                      firstName={row.firstName}
+                      lastName={row.lastName}
+                      gender={row.gender}
+                      parentId={row.parentId}
+                      age={row.age}
+                      avatarUrl={row.avatarUrl}
+                      selected={selected.indexOf(row.firstName) !== -1}
+                      handleClick={(event) => handleClick(event, row.firstName)}
+                    />
+                  ))}
 
-                    <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, kids.length)} />
+                <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, sessions.length)} />
 
-                    {notFound && <TableNoData query={filterName} />}
-                  </>
-                )}
+                {notFound && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
           </TableContainer>
@@ -181,7 +171,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={kids.length}
+          count={sessions.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

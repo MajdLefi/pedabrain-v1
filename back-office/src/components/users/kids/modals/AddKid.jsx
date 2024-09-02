@@ -15,7 +15,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { fetchUsersByRole } from 'src/store/reducers/userSlice';
-import { addKid, fetchKids } from 'src/store/reducers/kidSlice';
+import { addKid, fetchKids, fetchKidsByParent } from 'src/store/reducers/kidSlice';
+import { addSession, } from 'src/store/reducers/sessionSlice';
 import { toast } from 'react-toastify';
 import Iconify from 'src/components/iconify';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -45,11 +46,12 @@ export default function AddKid() {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.authSlice.user);
-  const parents = useSelector((state) => state.userSlice.users?.data || []);
+  const kids = useSelector((state) => state.kidSlice.kids?.data || []);
   const token = user.token;
 
   useEffect(() => {
-    dispatch(fetchUsersByRole({ token, role: 'parent' })).catch((error) => {
+    dispatch(fetchKidsByParent({ parentId: user.id, token }))
+    .catch((error) => {
       console.error('Error fetching users:', error);
     });
   }, [dispatch, token]);
@@ -60,7 +62,7 @@ export default function AddKid() {
   const onSubmit = async (values, { setSubmitting, setErrors }) => {
     if (token) {
       try {
-        await dispatch(addKid({ kidData: values, token }));
+        await dispatch(addSession({ sessionData: values, token }));
         await dispatch(fetchKids(token));
         handleClose();
       } catch (error) {
@@ -73,9 +75,9 @@ export default function AddKid() {
     setSubmitting(false);
   };
 
-  const parentOptions = parents.map((parent) => ({
-    ...parent,
-    fullName: `${parent.firstName} ${parent.lastName}`,
+  const parentOptions = kids.map((kid) => ({
+    ...kid,
+    fullName: `${kid.firstName} ${kid.lastName}`,
   }));
 
   return (

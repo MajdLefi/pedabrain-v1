@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-// import { SessionView } from 'src/components/users/sessions/view';
+import { SessionDemand } from 'src/components/apps/parent/sessions/session-demand/view';
 
 export default function SessionsPage() {
   return (
@@ -8,7 +8,7 @@ export default function SessionsPage() {
       <title> Sessions | PEDABRAIN </title>
     </Helmet>
 
-    {/* <SessionView /> */}
+    <SessionDemand />
   </>
   )
 }

@@ -8,12 +8,9 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress for loading indicator
 import { fetchUsersByRole } from 'src/store/reducers/userSlice';
-
-import { users } from 'src/_mock/user';
-
 import Scrollbar from 'src/components/scrollbar';
-
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -21,35 +18,30 @@ import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 import AddParent from '../modals/AddParent';
-
-// ----------------------------------------------------------------------
+import TableRow from '@mui/material/TableRow'; // Import TableRow
+import TableCell from '@mui/material/TableCell';
 
 export default function UserPage() {
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
-
   const [orderBy, setOrderBy] = useState('firstName');
-
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   const dispatch = useDispatch();
-
-  const user = useSelector((state) => state.authSlice.user);
   const users = useSelector((state) => state.userSlice.users?.data || []);
-  const token = user.token;
+  const user = JSON.parse(localStorage.getItem('user'));
+  const token = user && user?.token;
 
   useEffect(() => {
-    //setLoading(true);
+    setLoading(true); // Set loading to true before fetching data
     dispatch(fetchUsersByRole({ token, role: 'parent' }))
-      //.then(() => setLoading(false))
+      .then(() => setLoading(false)) // Set loading to false after data is fetched
       .catch((error) => {
         console.error('Error fetching users:', error);
-        //setLoading(false);
+        setLoading(false); // Set loading to false on error
       });
   }, [dispatch, token]);
 
@@ -115,9 +107,6 @@ export default function UserPage() {
       <Stack direction="row" alignItems="start" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Liste des parents</Typography>
         <AddParent />
-        {/* <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          Nouveau Parent
-        </Button> */}
       </Stack>
 
       <Card>
@@ -148,34 +137,44 @@ export default function UserPage() {
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row._id}
-                      _id={row._id}
-                      token={token}
-                      firstName={row.firstName}
-                      lastName={row.lastName}
-                      phone={row.phone}
-                      email={row.email}
-                      location={row.location}
-                      gender={row.gender}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      selected={selected.indexOf(row.firstName) !== -1}
-                      handleClick={(event) => handleClick(event, row.firstName)}
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  <>
+                    {dataFiltered
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => (
+                        <UserTableRow
+                          key={row._id}
+                          _id={row._id}
+                          token={token}
+                          firstName={row.firstName}
+                          lastName={row.lastName}
+                          phone={row.phone}
+                          email={row.email}
+                          location={row.location}
+                          gender={row.gender}
+                          role={row.role}
+                          status={row.status}
+                          company={row.company}
+                          avatarUrl={row.avatarUrl}
+                          selected={selected.indexOf(row.firstName) !== -1}
+                          handleClick={(event) => handleClick(event, row.firstName)}
+                        />
+                      ))}
+
+                    <TableEmptyRows
+                      height={77}
+                      emptyRows={emptyRows(page, rowsPerPage, users.length)}
                     />
-                  ))}
 
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                />
-
-                {notFound && <TableNoData query={filterName} />}
+                    {notFound && <TableNoData query={filterName} />}
+                  </>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
