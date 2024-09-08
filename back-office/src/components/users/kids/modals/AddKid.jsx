@@ -62,7 +62,7 @@ export default function AddKid() {
   const onSubmit = async (values, { setSubmitting, setErrors }) => {
     if (token) {
       try {
-        await dispatch(addSession({ sessionData: values, token }));
+        await dispatch(addKid({ kidData: values, token }));
         await dispatch(fetchKids(token));
         handleClose();
       } catch (error) {

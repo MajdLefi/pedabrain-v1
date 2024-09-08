@@ -8,7 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { fetchKids } from 'src/store/reducers/kidSlice';
+import { fetchSessions } from 'src/store/reducers/sessionSlice';
 import { fetchUsersByRole } from 'src/store/reducers/userSlice';
 
 import Scrollbar from 'src/components/scrollbar';
@@ -23,25 +23,25 @@ import AddSession from '../modals/AddSession';
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function SessionView() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('firstName');
+  const [orderBy, setOrderBy] = useState('kidId');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const dispatch = useDispatch();
-  const kids = []
 
-  //const user = useSelector((state) => state.authSlice.user);
-  //const token = user.token;
+  const sessions = useSelector((state) => state.sessionSlice.sessions?.data || []);
+  //const sessions = [];
+  console.log(sessions);
 
   const user = JSON.parse(localStorage.getItem('user'));
   const token = user && user?.token;
 
   useEffect(() => {
-    dispatch(fetchKids(token)).catch((error) => {
+    dispatch(fetchSessions(token)).catch((error) => {
       console.error('Error fetching users:', error);
       //setLoading(false);
     });
@@ -57,18 +57,18 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = kids.map((n) => n.firstName);
+      const newSelecteds = sessions.map((n) => n.kidId);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, firstName) => {
-    const selectedIndex = selected.indexOf(firstName);
+  const handleClick = (event, kidId) => {
+    const selectedIndex = selected.indexOf(kidId);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, firstName);
+      newSelected = newSelected.concat(selected, kidId);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -97,7 +97,7 @@ export default function UserPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: kids,
+    inputData: sessions,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -124,17 +124,15 @@ export default function UserPage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={kids.length}
+                rowCount={sessions.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'firstName', label: 'First name' },
-                  { id: 'lastName', label: 'Last name' },
-                  { id: 'age', label: 'Age' },
-                  { id: 'gender', label: 'Gender' },
-                  { id: 'parentId', label: 'Parent' },
-                  { id: 'status', label: 'status' },
+                  { id: 'kidId', label: 'Enfant' },
+                  { id: 'sessionDate', label: 'Date de la séance' },
+                  { id: 'status', label: 'Status' },
+                  { id: 'problem', label: 'Problem' },
                 ]}
               />
               <TableBody>
@@ -145,18 +143,19 @@ export default function UserPage() {
                       token={token}
                       key={row._id}
                       _id={row._id}
-                      firstName={row.firstName}
-                      lastName={row.lastName}
-                      gender={row.gender}
-                      parentId={row.parentId}
-                      age={row.age}
-                      avatarUrl={row.avatarUrl}
-                      selected={selected.indexOf(row.firstName) !== -1}
-                      handleClick={(event) => handleClick(event, row.firstName)}
+                      kidId={row.kidId}
+                      sessionDate={row.sessionDate}
+                      status={row.status}
+                      problem={row.problem}
+                      selected={selected.indexOf(row.kidId) !== -1}
+                      handleClick={(event) => handleClick(event, row.kidId)}
                     />
                   ))}
 
-                <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, kids.length)} />
+                <TableEmptyRows
+                  height={77}
+                  emptyRows={emptyRows(page, rowsPerPage, sessions.length)}
+                />
 
                 {notFound && <TableNoData query={filterName} />}
               </TableBody>
@@ -167,7 +166,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={kids.length}
+          count={sessions.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

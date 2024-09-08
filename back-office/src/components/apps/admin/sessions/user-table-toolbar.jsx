@@ -25,7 +25,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         }),
       }}
     >
-      {numSelected > 0 ? (
+      {/* {numSelected > 0 ? (
         <Typography component="div" variant="subtitle1">
           {numSelected} selected
         </Typography>
@@ -33,7 +33,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         <OutlinedInput
           value={filterName}
           onChange={onFilterName}
-          placeholder="Enfant..."
+          placeholder="Parent..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify
@@ -43,7 +43,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
             </InputAdornment>
           }
         />
-      )}
+      )} */}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">

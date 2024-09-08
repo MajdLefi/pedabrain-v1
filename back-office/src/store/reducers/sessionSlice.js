@@ -169,7 +169,7 @@ const sessionsSlice = createSlice({
     });
     builder.addCase(addSession.fulfilled, (state, action) => {
       state.loading = false;
-      state.sessions.push(action.payload);
+      state.sessions?.data.push(action.payload);
       toast.success('A new session is added!', {
         position: 'bottom-left'
       });

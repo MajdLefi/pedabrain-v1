@@ -196,7 +196,7 @@ const router = express.Router();
 router
     .route('/')
     .get(authService.protect(['admin']), getSessions)
-    .post(authService.protect(['admin']), createSession);
+    .post(authService.protect(['admin', 'parent']), createSession);
 
 router
     .route('/done')

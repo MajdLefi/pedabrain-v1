@@ -9,6 +9,7 @@ export const ParentsPage = lazy(() => import('src/pages/users/parents'));
 export const KidsPage = lazy(() => import('src/pages/users/kids'));
 export const SessionsPage = lazy(() => import('src/pages/admin/session'));
 export const SessionsDemands = lazy(() => import('src/pages/parent/session'));
+export const SessionsHistory = lazy(() => import('src/pages/admin/session-history'));
 export const ParentKidsPage = lazy(() => import('src/pages/users/parent/kids/kidsList'));
 export const TeachersPage = lazy(() => import('src/pages/users/teachers'));
 export const PsychologistsPage = lazy(() => import('src/pages/users/psychologists'));
@@ -44,7 +45,8 @@ export default function Router() {
         { path: 'kids', element: <ProtectedRoute element={<KidsPage />} /> },
         { path: '/parent/kids', element: <ProtectedRoute element={<ParentKidsPage />} /> },
         { path: '/parent/session-demand', element: <ProtectedRoute element={<SessionsDemands />} /> },
-        // { path: 'sessions', element: <ProtectedRoute element={<SessionsPage />} /> },
+        { path: '/sessions-history', element: <ProtectedRoute element={<SessionsHistory />} /> },
+        { path: 'sessions', element: <ProtectedRoute element={<SessionsPage />} /> },
         { path: 'psychologists', element: <ProtectedRoute element={<PsychologistsPage />} /> },
       ],
     },

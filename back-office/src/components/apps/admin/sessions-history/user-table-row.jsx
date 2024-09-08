@@ -15,47 +15,50 @@ import Popover from '@mui/material/Popover';
 import Iconify from 'src/components/iconify';
 import { Avatar, Box } from '@mui/material';
 import EditKid from './modals/UpdateSession';
+import { fetchKidById } from 'src/store/reducers/kidSlice';
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({
   _id,
   selected,
-  firstName,
-  lastName,
-  gender,
+  kidId,
+  sessionDate,
+  status,
   age,
-  parentId,
+  problem,
   token,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
-  const [parentFullName, setParentFullName] = useState('');
+  const [kidFullName, setKidFullName] = useState('');
+  const [kidGender, setGender] = useState('');
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     let isMounted = true; 
-    const fetchParent = async () => {
-      if (parentId) {
+    const fetchKid = async () => {
+      if (kidId) {
         try {
-          const result = await dispatch(fetchUserById({ userId: parentId, token }));
+          const result = await dispatch(fetchKidById({ kidId: kidId, token }));
 
-          if (fetchUserById.fulfilled.match(result)) {
-            const parent = result.payload.data; // Adjust based on your response structure
-            setParentFullName(`${parent.firstName} ${parent.lastName}`);
+          if (fetchKidById.fulfilled.match(result)) {
+            const kid = result.payload.data; // Adjust based on your response structure
+            setKidFullName(`${kid.firstName} ${kid.lastName}`);
+            setGender(`${kid.gender}`);
           } else {
-            setParentFullName('Error loading name');
+            setKidFullName('Error loading name');
           }
         } catch (error) {
-          // console.error('Error fetching parent data:', error.message);
-          // setParentFullName('Error loading name');
+          // console.error('Error fetching kid data:', error.message);
+          // setKidFullName('Error loading name');
         }
       }
     };
 
-    fetchParent();
-  }, [parentId, dispatch, token]);
+    fetchKid();
+  }, [problem, dispatch, token]);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -76,7 +79,7 @@ export default function UserTableRow({
         <Box sx={{ mr: '50px', ml: '10px', pt: '15px' }}>
           <TableCell component="th" scope="row" padding="none">
             <Stack direction="row" alignItems="center" spacing={2}>
-              {gender === 'male' ? (
+              {kidGender === 'male' ? (
                 <Avatar alt="avatar" src={`/assets/images/avatars/avatar_${2}.jpg`} />
               ) : (
                 <Avatar alt="avatar" src={`/assets/images/avatars/avatar_${1}.jpg`} />
@@ -89,15 +92,14 @@ export default function UserTableRow({
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
-              {firstName}
+              {kidFullName}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{lastName}</TableCell>
-        <TableCell>{age}</TableCell>
-        <TableCell>{gender}</TableCell>
-        <TableCell>{parentFullName}</TableCell>
+        <TableCell>{sessionDate}</TableCell>
+        <TableCell>{status}</TableCell>
+        <TableCell>{problem}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -119,10 +121,10 @@ export default function UserTableRow({
         <MenuItem>
           <EditKid
             _id={_id}
-            firstName={firstName}
-            lastName={lastName}
+            kidId={kidId}
+            sessionDate={sessionDate}
             age={age}
-            gender={gender}
+            status={status}
           />
         </MenuItem>
       </Popover>
@@ -133,11 +135,10 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   _id: PropTypes.string.isRequired,
   selected: PropTypes.bool.isRequired,
-  firstName: PropTypes.string.isRequired,
-  lastName: PropTypes.string.isRequired,
-  gender: PropTypes.string.isRequired,
-  age: PropTypes.number.isRequired,
-  parentId: PropTypes.string,
+  kidId: PropTypes.string.isRequired,
+  sessionDate: PropTypes.string.isRequired,
+  status: PropTypes.string.isRequired,
+  problem: PropTypes.string,
   token: PropTypes.string.isRequired,
   handleClick: PropTypes.func.isRequired,
 };
