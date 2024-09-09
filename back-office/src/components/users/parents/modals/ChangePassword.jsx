@@ -31,23 +31,26 @@ export default function ChangePassword() {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.authSlice.user);
+  const token = user?.token;
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const onSubmit = async (values, { setSubmitting, setErrors }) => {
-    if (user && user.token) {
+    if (token) {
       try {
-        const response = await dispatch(changePassword({
-          userId: user.id,
-          token: user.token,
-          passwordData: {
-            currentPassword: "",
-            newPassword: values.newPassword,
-            newPasswordConfirm: values.newPasswordConfirm,
-          },
-        })).unwrap();
-  
+        const response = await dispatch(
+          changePassword({
+            userId: user.id,
+            token: user.token,
+            passwordData: {
+              currentPassword: '',
+              newPassword: values.newPassword,
+              newPasswordConfirm: values.newPasswordConfirm,
+            },
+          })
+        ).unwrap();
+
         // Check if the backend response indicates a password mismatch
         if (response.status === 401 || response.data?.message === 'Incorrect current password') {
           setErrors({ currentPassword: 'Incorrect current password' });
@@ -68,7 +71,7 @@ export default function ChangePassword() {
   return (
     <Box>
       <Box onClick={handleOpen} sx={{ display: 'flex', cursor: 'pointer' }}>
-        <Iconify icon="eva:lock-outline" sx={{ mr: '5px',  pt:'2px' }} />
+        <Iconify icon="eva:lock-outline" sx={{ mr: '5px', pt: '2px' }} />
         <Typography sx={{ pt: '1px' }}>Change password</Typography>
       </Box>
       <Modal

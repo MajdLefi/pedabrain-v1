@@ -9,7 +9,8 @@ const initialState = {
   error: false,
   isSuccess: false,
   loading: false,
-  message: ''
+  message: '',
+  token: data ? JSON.parse(data)?.token : null, // Ensure token is stored
 };
 
 export const login = createAsyncThunk('auth/login', async (userData, thunkAPI) => {
