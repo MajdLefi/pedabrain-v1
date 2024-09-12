@@ -10,9 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import { fetchSessions } from 'src/store/reducers/sessionSlice';
 import { fetchUsersByRole } from 'src/store/reducers/userSlice';
-
 import Scrollbar from 'src/components/scrollbar';
-
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
@@ -32,8 +30,10 @@ export default function SessionView() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const dispatch = useDispatch();
-
-  const sessions = useSelector((state) => state.sessionSlice.sessions?.data || []);
+  const sessions = useSelector((state) => 
+    (state.sessionSlice.sessions?.data || []).filter(session => session.status !== 'done')
+  );
+  // const sessions = useSelector((state) => state.sessionSlice.sessions?.data || []);
   //const sessions = [];
   console.log(sessions);
 
@@ -120,7 +120,7 @@ export default function SessionView() {
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
+            <Table sx={{ minWidth: 900 }}>
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
@@ -132,7 +132,9 @@ export default function SessionView() {
                   { id: 'kidId', label: 'Enfant' },
                   { id: 'sessionDate', label: 'Date de la séance' },
                   { id: 'status', label: 'Status' },
-                  { id: 'problem', label: 'Problem' },
+                  { id: 'problem', label: 'Fiche' },
+                  { id: 'doctor', label: 'Educateur' },
+                  // { id: 'testSkills', label: 'Fiche' },
                 ]}
               />
               <TableBody>
@@ -147,6 +149,10 @@ export default function SessionView() {
                       sessionDate={row.sessionDate}
                       status={row.status}
                       problem={row.problem}
+                      testSkills={row.testSkills}
+                      testObservations={row.testObservations}
+                      sessionPlan={row.sessionPlan}
+                      doctor={row.doctor}
                       selected={selected.indexOf(row.kidId) !== -1}
                       handleClick={(event) => handleClick(event, row.kidId)}
                     />

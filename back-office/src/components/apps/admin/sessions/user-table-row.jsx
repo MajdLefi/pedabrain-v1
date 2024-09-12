@@ -11,11 +11,15 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Popover from '@mui/material/Popover';
-
 import Iconify from 'src/components/iconify';
 import { Avatar, Box } from '@mui/material';
-import EditKid from './modals/UpdateSession';
+import EditKid from './modals/CreateTest';
 import { fetchKidById } from 'src/store/reducers/kidSlice';
+import EditStatus from './modals/EditStatus';
+import Label from 'src/components/label';
+import EditSession from './modals/EditSession';
+import CreateTest from './modals/CreateTest';
+import TestDetails from './modals/TestDetails';
 
 // ----------------------------------------------------------------------
 
@@ -25,8 +29,11 @@ export default function UserTableRow({
   kidId,
   sessionDate,
   status,
-  age,
+  testSkills,
+  testObservations,
+  sessionPlan,
   problem,
+  doctor,
   token,
   handleClick,
 }) {
@@ -35,9 +42,10 @@ export default function UserTableRow({
   const [kidGender, setGender] = useState('');
 
   const dispatch = useDispatch();
+  console.log(token);
 
   useEffect(() => {
-    let isMounted = true; 
+    let isMounted = true;
     const fetchKid = async () => {
       if (kidId) {
         try {
@@ -68,7 +76,6 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -96,10 +103,42 @@ export default function UserTableRow({
             </Typography>
           </Stack>
         </TableCell>
-
         <TableCell>{sessionDate}</TableCell>
-        <TableCell>{status}</TableCell>
-        <TableCell>{problem}</TableCell>
+        {/* <TableCell>{status}</TableCell> */}
+        <TableCell>
+          <Label
+            color={
+              (status === 'accepted' && 'success') ||
+              (status === 'pending' && 'warning') ||
+              (status === 'rejected' && 'error') ||
+              'default' // Fallback for other statuses
+            }
+          >
+            {status}
+          </Label>
+        </TableCell>
+
+        <TableCell sx={{}}>
+          <TestDetails
+            _id={_id}
+            problem={problem}
+            kidFullName = {kidFullName}
+            testSkills={testSkills}
+            testObservations={testObservations}
+            sessionPlan={sessionPlan}
+          />
+        </TableCell>
+        <TableCell sx={{}}>
+          {' '}
+          {doctor ? (
+            doctor
+          ) : (
+            <Typography color="textSecondary" display="flex" alignItems="center">
+              <Iconify icon="eva:close-circle-fill" sx={{ marginRight: 1 }} />
+              Non assigné
+            </Typography>
+          )}
+        </TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -119,13 +158,20 @@ export default function UserTableRow({
         }}
       >
         <MenuItem>
-          <EditKid
+          <EditSession
             _id={_id}
+            status={status}
             kidId={kidId}
             sessionDate={sessionDate}
-            age={age}
-            status={status}
+            problem={problem}
+            doctor={doctor}
           />
+        </MenuItem>
+        <MenuItem>
+          <EditStatus _id={_id} status={status} />
+        </MenuItem>
+        <MenuItem>
+          <CreateTest _id={_id} token={token} status={status} />
         </MenuItem>
       </Popover>
     </>
@@ -139,6 +185,10 @@ UserTableRow.propTypes = {
   sessionDate: PropTypes.string.isRequired,
   status: PropTypes.string.isRequired,
   problem: PropTypes.string,
+  testSkills: PropTypes.string,
+  testObservations: PropTypes.string,
+  sessionPlan: PropTypes.string,
+  doctor: PropTypes.string,
   token: PropTypes.string.isRequired,
   handleClick: PropTypes.func.isRequired,
 };

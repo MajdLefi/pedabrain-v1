@@ -10,6 +10,7 @@ import {
   FormControl,
   Select,
   FormHelperText,
+  Autocomplete
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import dayjs from 'dayjs';
@@ -18,8 +19,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import { fetchKidsByParent } from 'src/store/reducers/kidSlice';
-import { addSession } from 'src/store/reducers/sessionSlice';
+import { fetchKids, fetchKidsByParent } from 'src/store/reducers/kidSlice';
+import { addSession, fetchSessions } from 'src/store/reducers/sessionSlice';
 import { toast } from 'react-toastify';
 import Iconify from 'src/components/iconify';
 
@@ -40,9 +41,10 @@ const validationSchema = Yup.object().shape({
   problem: Yup.string().required('Problem is required'),
   sessionDate: Yup.date().required('Session date is required'),
   status: Yup.string().required('Status is required'),
+  doctor: Yup.string().required('doctor is required'),
 });
 
-export default function AddKid() {
+export default function AddSession() {
   const [open, setOpen] = useState(false);
   const [sessionDate, setSessionDate] = useState(null);
   const [time, setTime] = useState(null);
@@ -52,7 +54,7 @@ export default function AddKid() {
   const token = user.token;
 
   useEffect(() => {
-    dispatch(fetchKidsByParent({ parentId: user.id, token })).catch((error) => {
+    dispatch(fetchKids(token)).catch((error) => {
       console.error('Error fetching users:', error);
     });
   }, [dispatch, token]);
@@ -64,6 +66,7 @@ export default function AddKid() {
     if (token) {
       try {
         await dispatch(addSession({ sessionData: values, token }));
+        await dispatch(fetchSessions(token));
         handleClose();
       } catch (error) {
         toast.error(error.message, { theme: 'colored' });
@@ -84,8 +87,14 @@ export default function AddKid() {
       .second(0)
       .millisecond(0);
     
-    return combined.toISOString(); // Convert to "YYYY-MM-DDTHH:mm:ss.sssZ" format
+    return combined.toISOString();
   };
+
+  const kidsOptions = kids.map((kid) => ({
+    ...kid,
+    fullName: `${kid.firstName} ${kid.lastName}`,
+  }));
+
 
   return (
     <Box>
@@ -110,6 +119,7 @@ export default function AddKid() {
           <Formik
             initialValues={{
               kidId: '',
+              doctor : '',
               problem: '',
               sessionDate: '',
               status: 'pending',
@@ -130,7 +140,7 @@ export default function AddKid() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <TextField
+                  {/* <TextField
                     sx={{ width: '100%' }}
                     id="kidId"
                     name="kidId"
@@ -141,10 +151,39 @@ export default function AddKid() {
                     onBlur={handleBlur}
                     error={touched.kidId && Boolean(errors.kidId)}
                     helperText={touched.kidId && errors.kidId}
+                  /> */}
+                   <Autocomplete
+                    disablePortal
+                    options={kidsOptions}
+                    getOptionLabel={(option) => option.fullName}
+                    sx={{ width: '100%',  }}
+                    onChange={(event, value) => {
+                      setFieldValue('kidId', value ? value._id : '');
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Enfant"
+                        error={touched.kidId && Boolean(errors.kidId)}
+                        helperText={touched.kidId && errors.kidId}
+                      />
+                    )}
+                    />
+                    <TextField
+                      sx={{ width: '100%' }}
+                      id="doctor"
+                      name="doctor"
+                      label="Educateur"
+                      variant="outlined"
+                      value={values.doctor}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={touched.doctor && Boolean(errors.doctor)}
+                      helperText={touched.doctor && errors.doctor}
                   />
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
-                      sx={{ width: '100%', mb: '20px' }}
+                      sx={{ width: '100%', }}
                       label="Choisir le jour"
                       value={sessionDate}
                       onChange={(newValue) => {
@@ -162,8 +201,21 @@ export default function AddKid() {
                       }}
                     />
                   </LocalizationProvider>
-
-                  <FormControl fullWidth error={Boolean(touched.problem && errors.problem)}>
+                  <TextField
+                      sx={{ width: '100%', mb:'20px' }}
+                      id="problem"
+                      name="problem"
+                      label="Problem"
+                      variant="outlined"
+                      value={values.problem}
+                      multiline
+                      rows={4}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={touched.problem && Boolean(errors.problem)}
+                      helperText={touched.problem && errors.problem}
+                  />
+                  {/* <FormControl sx={{mb: '20px'}} fullWidth error={Boolean(touched.problem && errors.problem)}>
                     <InputLabel>problem</InputLabel>
                     <Select
                       label="problem"
@@ -180,7 +232,7 @@ export default function AddKid() {
                     {touched.problem && errors.problem && (
                       <FormHelperText>{errors.problem}</FormHelperText>
                     )}
-                  </FormControl>
+                  </FormControl> */}
                 </Box>
                 {errors.submit && (
                   <Typography color="error" sx={{ mt: 2 }}>
