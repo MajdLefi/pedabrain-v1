@@ -1,4 +1,4 @@
-exports.sanitizeData = function (model, data) {
+exports.v = function (model, data) {
   if (model === 'User') {
       return exports.sanitizeUser(data);
   } else {
